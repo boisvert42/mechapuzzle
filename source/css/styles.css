@@ -1,0 +1,69 @@
+body {
+    font-size: 80%;
+    font-family: 'Lucida Grande', Verdana, Arial, Sans-Serif;
+}
+ul#tabs {
+    list-style-type: none;
+    margin: 30px 0 0 0;
+    padding: 0 0 0.3em 0;
+}
+ul#tabs li { display: inline }
+ul#tabs li a {
+    color: #42454a;
+    background-color: #dedbde;
+    border: 1px solid #c9c3ba;
+    border-bottom: none;
+    padding: 0.3em;
+    text-decoration: none;
+}
+ul#tabs li a:hover { background-color: #f1f0ee }
+ul#tabs li a.selected {
+    color: #000;
+    background-color: #f1f0ee;
+    font-weight: bold;
+    padding: 0.7em 0.3em 0.38em 0.3em;
+}
+div.tabContent {
+    border: 1px solid #c9c3ba;
+    padding: 0.5em;
+    background-color: #f1f0ee;
+}
+div.tabContent.hide { display: none }
+
+/** Grid tables **/
+table.grid {
+    border: 1px solid black;
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+table.grid td {
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    margin: 0;
+    border: 1px solid black;
+    text-align: center;
+    vertical-align: top;
+    background-color: #EEEEEE;
+}
+
+table.grid td.black {
+    background-color: black;
+}
+
+table.grid div.letter {
+    height: 12px;
+    width: 50%;
+    margin: auto;
+}
+
+table.grid div.number {
+    left: 0px;
+    top: 0px;
+    height: 6px;
+    text-align: left;
+    font-size: 8px;
+    padding-top: 0px;
+    margin: 0px;
+}
