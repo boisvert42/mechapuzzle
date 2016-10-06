@@ -359,9 +359,7 @@ var ActiveXObject, parsedPuz, filecontents, PUZAPP = {};
     {
         return (arr.indexOf(obj) != -1);
     }
-
-    //PUZAPP.deduper_from_puz_contents = deduper_from_puz_contents;
-    //PUZAPP.html_grid_from_puz_contents = html_grid_from_puz_contents;
+    
     PUZAPP.parsepuz = parsePuz;
 
 }());
