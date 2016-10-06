@@ -94,7 +94,7 @@ function letter_frequency(puzdata)
 
     // Fake standard counts
     var standard_counts = [];
-    for (var i=0; i<26; i++) {standard_counts[i] = total_letters * standard_letter_distribution[i]/100;}
+    for (var i=0; i<26; i++) {standard_counts[i] = Math.round(total_letters * standard_letter_distribution[i]/100);}
 
     // Now plot!
     var options = {
