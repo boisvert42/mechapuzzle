@@ -11,10 +11,15 @@
 <script src="js/theme.js"></script>
 <script src="js/clues.js"></script>
 <script src="js/entries.js"></script>
+<script src="js/helper_functions.js"></script>
+<script src="js/puz.js"></script>
 
 </head>
 
 <body onload="init()">
+
+Select an unlocked .puz file to analyze.<br />
+<input type="file" id="files" name="files" />
 
 
 <ul id="tabs">
@@ -56,10 +61,34 @@
 
 
 <script type="text/javascript">
-var puzdata = {"title": "Top Notch", "notes": "", "author": "  Alex Boisvert  ", "solution": "DIVA.ACTS.ASPENACID.RARE.BERRAROBZOMBIE.SCANSKNEES.LAMP.ONIT....SKELETONKEYNORMAL...STD...AHOY.ACNE.OBESEVIRGINIACREEPERYOYOS.OBOE.SEAS...OLD...INTENTSPIDERVEINS....MANN.JAMS.EATITARCED.MINECRAFTREUSE.PLEB.ECHOTERSE.SERB.STEP", "height": 15, "down": [{"cell": 0, "entry": "DARK", "num": 1, "len": 4, "clue": "Not pale"}, {"cell": 1, "entry": "ICON", "num": 2, "len": 4, "clue": "Desktop symbol"}, {"cell": 2, "entry": "VIBE", "num": 3, "len": 4, "clue": "Feeling you get from someone"}, {"cell": 3, "entry": "ADZE", "num": 4, "len": 4, "clue": "Tool for carpenters or cruciverbalists"}, {"cell": 5, "entry": "ARM", "num": 5, "len": 3, "clue": "Give weapons to"}, {"cell": 6, "entry": "CABLE", "num": 6, "len": 5, "clue": "Type of modem"}, {"cell": 7, "entry": "TRIAL", "num": 7, "len": 5, "clue": "\"Law & Order\" event"}, {"cell": 8, "entry": "SEEME", "num": 8, "len": 5, "clue": "Teacher's request"}, {"cell": 10, "entry": "ABS", "num": 9, "len": 3, "clue": "Midsection muscles, for short"}, {"cell": 11, "entry": "SECONDBEST", "num": 10, "len": 10, "clue": "Not quite tops"}, {"cell": 12, "entry": "PRANK", "num": 11, "len": 5, "clue": "Bit of horseplay"}, {"cell": 13, "entry": "ERNIE", "num": 12, "len": 5, "clue": "Golfer Els"}, {"cell": 14, "entry": "NASTY", "num": 13, "len": 5, "clue": "Really mean"}, {"cell": 34, "entry": "OSSA", "num": 18, "len": 4, "clue": "Greek mount"}, {"cell": 54, "entry": "PTS", "num": 22, "len": 3, "clue": "Free throw scores: Abbr."}, {"cell": 65, "entry": "KLAN", "num": 25, "len": 4, "clue": "Ku Klux ___"}, {"cell": 70, "entry": "OTOE", "num": 26, "len": 4, "clue": "Chiwere speaker"}, {"cell": 75, "entry": "NAVY", "num": 27, "len": 4, "clue": "The Midshipmen"}, {"cell": 76, "entry": "OHIO", "num": 28, "len": 4, "clue": "Midwestern state with a non-rectangular flag"}, {"cell": 77, "entry": "RORY", "num": 29, "len": 4, "clue": "2012 PGA Championship winner McIlroy"}, {"cell": 78, "entry": "MYGOODNESS", "num": 30, "len": 10, "clue": "\"Holy jeez\""}, {"cell": 96, "entry": "CIO", "num": 34, "len": 3, "clue": "AFL's partner"}, {"cell": 97, "entry": "NAB", "num": 35, "len": 3, "clue": "Collar, as a crook"}, {"cell": 98, "entry": "ECO", "num": 36, "len": 3, "clue": "\"Foucault's Pendulum\" author"}, {"cell": 102, "entry": "EPEE", "num": 38, "len": 4, "clue": "Fencing category"}, {"cell": 103, "entry": "SEAN", "num": 39, "len": 4, "clue": "Bean whose name really looks like it ought to rhyme with his first name"}, {"cell": 104, "entry": "ERST", "num": 40, "len": 4, "clue": "Formerly formerly"}, {"cell": 109, "entry": "ISLE", "num": 42, "len": 4, "clue": "___ of Man"}, {"cell": 114, "entry": "REIN", "num": 43, "len": 4, "clue": "Jockey's strap"}, {"cell": 140, "entry": "DRJ", "num": 48, "len": 3, "clue": "Mr. Erving, to fans"}, {"cell": 145, "entry": "NSEC", "num": 50, "len": 4, "clue": "Tiny fraction of a min."}, {"cell": 150, "entry": "SMART", "num": 51, "len": 5, "clue": "Well-dressed"}, {"cell": 151, "entry": "PAREE", "num": 52, "len": 5, "clue": "Gay ___"}, {"cell": 152, "entry": "INCUR", "num": 53, "len": 5, "clue": "Run up, as debts"}, {"cell": 156, "entry": "VAMPS", "num": 54, "len": 5, "clue": "Plays a few bars over and over"}, {"cell": 157, "entry": "EMILE", "num": 55, "len": 5, "clue": "The \"Zola\" of \"Zolaesque\""}, {"cell": 158, "entry": "ISNER", "num": 56, "len": 5, "clue": "John who has a tendency to play marathon tennis matches"}, {"cell": 176, "entry": "ARES", "num": 60, "len": 4, "clue": "Mars' alias"}, {"cell": 177, "entry": "TACT", "num": 61, "len": 4, "clue": "Diplomatic asset"}, {"cell": 178, "entry": "IFHE", "num": 62, "len": 4, "clue": "\"___ hollers, let...\""}, {"cell": 179, "entry": "TTOP", "num": 63, "len": 4, "clue": "'Vette roof option"}, {"cell": 184, "entry": "DEE", "num": 65, "len": 3, "clue": "Sandra ___"}, {"cell": 189, "entry": "EBB", "num": 67, "len": 3, "clue": "Fade away"}], "width": 15, "across": [{"cell": 0, "entry": "DIVA", "num": 1, "len": 4, "clue": "Prima donna"}, {"cell": 5, "entry": "ACTS", "num": 5, "len": 4, "clue": "First Bible book after the Gospels, for short"}, {"cell": 10, "entry": "ASPEN", "num": 9, "len": 5, "clue": "Colorado ski resort town"}, {"cell": 15, "entry": "ACID", "num": 14, "len": 4, "clue": "Base's opposite"}, {"cell": 20, "entry": "RARE", "num": 15, "len": 4, "clue": "Pink, as steak"}, {"cell": 25, "entry": "BERRA", "num": 16, "len": 5, "clue": "Yogi in the Hall of Fame"}, {"cell": 30, "entry": "ROBZOMBIE", "num": 17, "len": 9, "clue": "Singer revered by Beavis and Butthead"}, {"cell": 40, "entry": "SCANS", "num": 19, "len": 5, "clue": "Reads through quickly"}, {"cell": 45, "entry": "KNEES", "num": 20, "len": 5, "clue": "Bee's ___"}, {"cell": 51, "entry": "LAMP", "num": 21, "len": 4, "clue": "It was rubbed by Aladdin"}, {"cell": 56, "entry": "ONIT", "num": 23, "len": 4, "clue": "\"I got this\""}, {"cell": 64, "entry": "SKELETONKEY", "num": 24, "len": 11, "clue": "All-purpose opener"}, {"cell": 75, "entry": "NORMAL", "num": 27, "len": 6, "clue": "Run-of-the-mill"}, {"cell": 84, "entry": "STD", "num": 31, "len": 3, "clue": "Avg."}, {"cell": 90, "entry": "AHOY", "num": 32, "len": 4, "clue": "Chips ___"}, {"cell": 95, "entry": "ACNE", "num": 33, "len": 4, "clue": "Teen concern"}, {"cell": 100, "entry": "OBESE", "num": 37, "len": 5, "clue": "Fatter than fat"}, {"cell": 105, "entry": "VIRGINIACREEPER", "num": 41, "len": 15, "clue": "Vine often mistaken for wild marijuana"}, {"cell": 120, "entry": "YOYOS", "num": 44, "len": 5, "clue": "Toys on a string"}, {"cell": 126, "entry": "OBOE", "num": 45, "len": 4, "clue": "Double reed instrument"}, {"cell": 131, "entry": "SEAS", "num": 46, "len": 4, "clue": "Oceans"}, {"cell": 138, "entry": "OLD", "num": 47, "len": 3, "clue": "Ancient"}, {"cell": 144, "entry": "INTENT", "num": 49, "len": 6, "clue": "Aim"}, {"cell": 150, "entry": "SPIDERVEINS", "num": 51, "len": 11, "clue": "Vascular surgery target"}, {"cell": 165, "entry": "MANN", "num": 57, "len": 4, "clue": "Aimee whose Twitter bio reads \"Oscar loser, singer/songwriter, wanna-be musical writer.\""}, {"cell": 170, "entry": "JAMS", "num": 58, "len": 4, "clue": "Photocopier problems"}, {"cell": 175, "entry": "EATIT", "num": 59, "len": 5, "clue": "Weird Al parody of 1984"}, {"cell": 180, "entry": "ARCED", "num": 64, "len": 5, "clue": "Moved along a curve"}, {"cell": 186, "entry": "MINECRAFT", "num": 66, "len": 9, "clue": "Immensely popular computer game whose monsters are hiding in this puzzle"}, {"cell": 195, "entry": "REUSE", "num": 68, "len": 5, "clue": "Find another application for"}, {"cell": 201, "entry": "PLEB", "num": 69, "len": 4, "clue": "Commoner, for short"}, {"cell": 206, "entry": "ECHO", "num": 70, "len": 4, "clue": "Empty room sound"}, {"cell": 210, "entry": "TERSE", "num": 71, "len": 5, "clue": "To the point"}, {"cell": 216, "entry": "SERB", "num": 72, "len": 4, "clue": "Belgrade native"}, {"cell": 221, "entry": "STEP", "num": 73, "len": 4, "clue": "Type of aerobics"}]};
-render_grid(puzdata);
-render_theme(puzdata);
-render_clues(puzdata);
-render_entries(puzdata);
+function handleFileSelect(evt) {
+    var files = evt.target.files; // FileList object
+
+    // files is a FileList of File objects.
+    var output = [];
+    for (var i = 0, f; f = files[i]; i++) {
+
+        // Only process small files.
+        if (f.size >= 7500) {
+            alert('This file is too big.');
+            continue;
+        }
+        if (f) {
+            var r = new FileReader();
+            r.onload = (function(theFile) {
+                return function(e) { 
+                    var contents = e.target.result;
+                    var elt = document.getElementById('puzjs_output');
+                    var puzdata = PUZAPP.parsepuz(contents);
+                    render_all(puzdata);
+                };
+            })(f);
+            r.readAsBinaryString(f);
+        } else { 
+            alert("Failed to load file");
+        }
+    }
+}
+document.getElementById('files').addEventListener('change', handleFileSelect, false);
 </script>
 </body></html>

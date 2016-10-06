@@ -5,6 +5,7 @@ var standard_letter_distribution = [11.3, 1.9, 2.9, 3.6, 13.0, 1.1, 2.0, 2.4, 6.
 
 function render_grid(puzdata)
 {
+    document.getElementById(render_to).innerHTML = '';
     width_height(puzdata);
     symmetry(puzdata);
     display_grid(puzdata);
@@ -48,7 +49,7 @@ function display_grid() // display_grid(puzdata, color_grid = NULL)
 
     var h = puzdata.height; var w = puzdata.width;
     var sol = puzdata.solution;
-    var gn = grid_numbers(puzdata);
+    var gn = puzdata.sqNbrs;
     var grid_html = '<table class="grid">\n';
     for (var i=0; i<h; i++)
     {
@@ -154,28 +155,5 @@ function letter_frequency(puzdata)
     var chart = new Highcharts.Chart(options);
 
 }
-
-/** Helper functions **/
-
-function grid_numbers(puzdata)
-{
-    var gn = [];
-    var grid_size = puzdata.height * puzdata.width;
-    // Initialize to empty array
-    for (var i=0; i < grid_size; i++)
-    {
-        gn.push('');
-    }
-    // Get numbers from both across and down clues
-    for (var i=0; i<puzdata.across.length; i++)
-    {
-        gn[puzdata.across[i].cell] = puzdata.across[i].num;
-    }
-    for (var i=0; i<puzdata.down.length; i++)
-    {
-        gn[puzdata.down[i].cell] = puzdata.down[i].num;
-    }
-    return gn;
-} 
 
 
