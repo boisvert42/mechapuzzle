@@ -229,6 +229,11 @@ var ActiveXObject, parsedPuz, filecontents, PUZAPP = {};
         retval.solution = bytes.substring(52, 52 + wh);
         retval.strings = bytes.substring(strings_offset).split('\u0000', nbrClues + 4);
         retval.grid = bytes.substring(grid_offset, grid_offset + wh);
+        // Replace "solution" with "grid" if the puzzle is filled
+        if (retval.grid.indexOf('-') == -1)
+		{
+			retval.solution = retval.grid;
+		}
         cksum = cksum_region(bytes, grid_offset, wh, cksum);
         var acrossWords = {}, downWords = {};
         for (y = 0; y < h; y++) {
@@ -366,11 +371,7 @@ var ActiveXObject, parsedPuz, filecontents, PUZAPP = {};
 	function puzdata(filecontents)
 	{
 		var parsedPuz = parsePuz(filecontents);
-		// Replace the solution with the grid if the grid is filled
-		if (parsedPuz.grid.indexOf('-') == -1)
-		{
-			parsedPuz.solution = parsedPuz.grid;
-		}
+		// Add in any additional data we may want
 		return parsedPuz;
 	}
     
