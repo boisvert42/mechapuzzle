@@ -1,11 +1,11 @@
-var render_to = 'grid_js';
+var grid_render_to = 'grid_js';
 var colors = ['aqua','gold','chartreuse','greenyellow','lightskyblue','orange','plum'];
 
 var standard_letter_distribution = [11.3, 1.9, 2.9, 3.6, 13.0, 1.1, 2.0, 2.4, 6.3, 0.3, 1.1, 5.1, 2.9, 6.0, 7.7, 2.9, 0.1, 6.9, 8.8, 7.2, 2.4, 0.8, 1.1, 0.3, 1.6, 0.3];
 
 function render_grid(puzdata)
 {
-    document.getElementById(render_to).innerHTML = '';
+    document.getElementById(grid_render_to).innerHTML = '';
     width_height(puzdata);
     symmetry(puzdata);
     display_grid(puzdata);
@@ -18,7 +18,7 @@ function width_height(puzdata)
     var is_unusual_size = false;
     if (puzdata.width != 15 || puzdata.height != 15) { is_unusual_size = true;}
     if (is_unusual_size) {width_height = '<mark>' + width_height + '</mark>';}
-    document.getElementById(render_to).innerHTML += 'Grid size: ' + width_height + '<br />\n';
+    document.getElementById(grid_render_to).innerHTML += 'Grid size: ' + width_height + '<br />\n';
 }
 
 function symmetry(puzdata)
@@ -36,7 +36,7 @@ function symmetry(puzdata)
     }
     var symmetry_text = 'Grid is symmetric';
     if (!is_symmetric) { symmetry_text = '<mark>Grid does not have standard symmetry</mark>'; }
-    document.getElementById(render_to).innerHTML += symmetry_text + '<br />\n';
+    document.getElementById(grid_render_to).innerHTML += symmetry_text + '<br />\n';
 }
 
 function display_grid() // display_grid(puzdata, color_grid = NULL)
@@ -66,7 +66,7 @@ function display_grid() // display_grid(puzdata, color_grid = NULL)
         grid_html += '</tr>';
     }
     grid_html += '</table>';
-    document.getElementById(render_to).innerHTML += grid_html + '<br />\n';
+    document.getElementById(grid_render_to).innerHTML += grid_html + '<br />\n';
 }
 
 function letter_frequency(puzdata)
@@ -98,64 +98,32 @@ function letter_frequency(puzdata)
     var standard_counts = [];
     for (var i=0; i<26; i++) {standard_counts[i] = Math.round(total_letters * standard_letter_distribution[i]/100);}
 
+    // Add titles to counts
+    standard_counts.unshift('Typical puzzle');
+    letter_counts.unshift('This puzzle');
+    var plot_data = [ standard_counts, letter_counts ];
+    
     // Now plot!
-    var options = {
-        chart: {
-            type: 'column',
-            renderTo: 'grid0',
-            plotBackgroundColor: null,
-            plotBorderWidth: null,
-            plotShadow: false
-        },
+    var chart = c3.generate({
+        bindto: '#grid0',
         title: {
             text: 'Letter counts'
         },
-        xAxis: {
-              categories: letters
-            , crosshair: true
+        data: {
+            columns: plot_data,
+            type: 'bar',
+            labels: true
         },
-        yAxis: {
-            min: 0,
-            title: {
-                text: 'Count'
+        axis: {
+            x: {
+                type: 'category',
+                categories: letters
+            },
+            y: {
+                label: 'Count'
             }
-        },
-        tooltip: {
-            headerFormat: '<span style="font-size:10px"><b>{point.key}</b></span><table>',
-            pointFormat: '<tr>'+
-                '<td style="color:{series.color};padding:0">{series.name}: </td>' +
-                '<td style="padding:0"><b>{point.y:.0f}</b></td>'+
-                '</tr>',
-            footerFormat: '</table>',
-            shared: true,
-            useHTML: true
-        },
-        plotOptions: {
-            column: {
-                pointPadding: 0,
-                borderWidth: 0,
-                dataLabels: {
-                    enabled: true, 
-                    crop: false, 
-                    overflow: 'none', 
-                    format: '{y:.0f}',
-                    style: {fontSize: '10px'}
-                }
-            }
-        },
-        series: [{
-            name: 'Typical puzzle',
-            color: 'black',
-            data: standard_counts
-
-        }, {
-            name: 'This puzzle',
-            color: 'red',
-            data: letter_counts
-        }]
-    };
-    var chart = new Highcharts.Chart(options);
-
+        }
+    });
 }
 
 
