@@ -52,11 +52,24 @@ table.grid td.black {
     background-color: black;
 }
 
+table.grid div.circle {
+    border: 1px solid #333;
+    border-radius: 50%;
+    
+    width: 24px; 
+    height: 24px;
+    
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
 table.grid div.letter {
     height: 12px;
     width: 50%;
     margin: auto;
 }
+
+
 
 table.grid div.number {
     left: 0px;

@@ -58,8 +58,10 @@ function display_grid() // display_grid(puzdata, color_grid = NULL)
         {
             var grid_index = i * w + j;
             var sol_at_index = sol[grid_index];
-            var cell_color = (sol_at_index == '.' ? ' class=black' : '');
-            grid_html += '<td' + cell_color + '><div class="number">' + gn[grid_index] + '</div><div class="letter">' + sol_at_index + '</div>\n';
+            var td_class_arr = [];
+            var td_class = (sol_at_index == '.' ? ' class=black' : '');
+            var circle_class = (puzdata.circles[grid_index] ? ' class=circle' : '');
+            grid_html += '<td' + td_class + '><div' + circle_class + '><div class="number">' + gn[grid_index] + '</div><div class="letter">' + sol_at_index + '</div></div>\n';
         }
         grid_html += '</tr>';
     }

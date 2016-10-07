@@ -330,7 +330,8 @@ var ActiveXObject, parsedPuz, filecontents, PUZAPP = {};
         {
             retval.notes = additional_clues[0];
         }   
-        // Down entries
+        retval.circles = [];
+        // Down entries.  Also circles
         for (x = 0; x < w; x++) {
             for (y = 0; y < h; y++) {
                 sdw = retval.startDownWord(x, y);
@@ -346,12 +347,14 @@ var ActiveXObject, parsedPuz, filecontents, PUZAPP = {};
                 {
                     down_entries[down_clue_number] += retval.solution[this_index];
                 }
+                retval.circles[this_index] = retval.circled(this_index);
             }
         }
         retval.across_entries = across_entries;
         retval.across_clues = across_clues;
         retval.down_clues = down_clues;
         retval.down_entries = down_entries;
+        
         return retval;
     }
 
