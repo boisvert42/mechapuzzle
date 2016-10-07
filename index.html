@@ -2,8 +2,8 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
-<link rel="stylesheet" type="text/css" href="css/styles.css"
-/>
+<meta charset="utf-8" />
+<link rel="stylesheet" type="text/css" href="css/styles.css" />
 <title>Mechapuzzle</title>
 <script src="js/tabs.js"></script>
 <script src="https://code.highcharts.com/highcharts.js"></script>
@@ -18,8 +18,10 @@
 
 <body onload="init()">
 
-Select an unlocked .puz file to analyze.<br />
+<p>Select a solved .puz file to analyze.</p>
 <input type="file" id="files" name="files" />
+<br /><br />
+<div id="metadata"></div>
 
 
 <ul id="tabs">
@@ -92,7 +94,7 @@ function handleFileSelect(evt) {
                 return function(e) { 
                     var contents = e.target.result;
                     var elt = document.getElementById('puzjs_output');
-                    var puzdata = PUZAPP.parsepuz(contents);
+                    var puzdata = PUZAPP.puzdata(contents);
                     render_all(puzdata);
                 };
             })(f);

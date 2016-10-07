@@ -359,8 +359,19 @@ var ActiveXObject, parsedPuz, filecontents, PUZAPP = {};
     {
         return (arr.indexOf(obj) != -1);
     }
+	
+	function puzdata(filecontents)
+	{
+		var parsedPuz = parsePuz(filecontents);
+		// Replace the solution with the grid if the grid is filled
+		if (parsedPuz.grid.indexOf('-') == -1)
+		{
+			parsedPuz.solution = parsedPuz.grid;
+		}
+		return parsedPuz;
+	}
     
-    PUZAPP.parsepuz = parsePuz;
+    PUZAPP.puzdata = puzdata;
 
 }());
 
