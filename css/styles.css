@@ -52,6 +52,22 @@ table.grid td.black {
     background-color: black;
 }
 
+table.grid div.puzcell:hover .celltooltip {
+	display: block;
+}
+
+.celltooltip {
+	display: none;
+	background: gray;
+	color: white;
+	text-align: left;
+    padding: 10px;
+    position: absolute;
+    z-index: 1000;
+	max-width: 250px;
+	opacity: 0.9;
+}
+
 table.grid div.circle {
     border: 1px solid #333;
     border-radius: 50%;
@@ -68,8 +84,6 @@ table.grid div.letter {
     width: 50%;
     margin: auto;
 }
-
-
 
 table.grid div.number {
     left: 0px;

@@ -39,6 +39,8 @@ function symmetry(puzdata)
     document.getElementById(grid_render_to).innerHTML += symmetry_text + '<br />\n';
 }
 
+/** Helper function to get across and down clues from a square **/
+
 function display_grid() // display_grid(puzdata, color_grid = NULL)
 {
     // Mandatory arguments
@@ -60,12 +62,33 @@ function display_grid() // display_grid(puzdata, color_grid = NULL)
             var sol_at_index = sol[grid_index];
             var td_class_arr = [];
             var td_class = (sol_at_index == '.' ? ' class=black' : '');
-            var circle_class = (puzdata.circles[grid_index] ? ' class=circle' : '');
-            grid_html += '<td' + td_class + '><div' + circle_class + '><div class="number">' + gn[grid_index] + '</div><div class="letter">' + sol_at_index + '</div></div>\n';
+			var div_class_array = ['puzcell']
+			/** For the tooltip **/
+			var across_number = puzdata.acrossWordNbrs[grid_index];
+			var down_number = puzdata.downWordNbrs[grid_index];
+			var tooltip_text = across_number + 'A: ' + puzdata.across_clues[across_number];
+			tooltip_text += '<br />';
+			tooltip_text += down_number + 'D: ' + puzdata.down_clues[down_number];
+			if (puzdata.circles[grid_index])
+			{
+				div_class_array.push('circle');
+			}
+			var div_class = ' class="' + div_class_array.join(' ') + '"';
+            grid_html += '<td' + td_class + '>\n';
+			grid_html += '  <div' + div_class + '>\n';
+			grid_html += '    <div class="number">' + gn[grid_index] + '</div>\n';
+			grid_html += '    <div class="letter">' + sol_at_index + '</div>\n';
+			if (across_number != 0 && down_number != 0)
+			{
+				grid_html += '    <span class="celltooltip">' + tooltip_text + '</span>\n';
+			}
+			grid_html += '  </div>\n';
+			grid_html += '</td>\n';
         }
         grid_html += '</tr>';
     }
     grid_html += '</table>';
+	console.log(grid_html);
     document.getElementById(grid_render_to).innerHTML += grid_html + '<br />\n';
 }
 
