@@ -2,12 +2,12 @@ function render_all(puzdata)
 {
 	render_metadata(puzdata);
     render_grid(puzdata);
-    //render_theme(puzdata);
+    render_theme(puzdata);
     render_clues(puzdata);
     //render_entries(puzdata);
     
     // This is just to show the raw data for development purposes
-    document.getElementById('rawdata_js').innerHTML = JSON.stringify(puzdata,null,' ');
+    document.getElementById('rawdata_js').innerHTML = JSON.stringify(puzdata, null, ' ');
 }
 
 function render_metadata(puzdata)
