@@ -62,13 +62,19 @@ function display_grid() // display_grid(puzdata, color_grid = NULL)
             var sol_at_index = sol[grid_index];
             var td_class_arr = [];
             var td_class = (sol_at_index == '.' ? ' class=black' : '');
-			var div_class_array = ['puzcell']
+			
 			/** For the tooltip **/
 			var across_number = puzdata.acrossWordNbrs[grid_index];
 			var down_number = puzdata.downWordNbrs[grid_index];
 			var tooltip_text = across_number + 'A: ' + puzdata.across_clues[across_number];
 			tooltip_text += '<br />';
 			tooltip_text += down_number + 'D: ' + puzdata.down_clues[down_number];
+			
+			/**
+			* All cells have the class of "puzcell"
+			* Circled ones have an additional "circle" class
+			**/
+			var div_class_array = ['puzcell'];
 			if (puzdata.circles[grid_index])
 			{
 				div_class_array.push('circle');
@@ -88,7 +94,7 @@ function display_grid() // display_grid(puzdata, color_grid = NULL)
         grid_html += '</tr>';
     }
     grid_html += '</table>';
-	console.log(grid_html);
+	//console.log(grid_html);
     document.getElementById(grid_render_to).innerHTML += grid_html + '<br />\n';
 }
 
