@@ -4,6 +4,7 @@ function render_clues(puzdata)
 {
     document.getElementById(clues_render_to).innerHTML = '';
     clue_initial_letters(puzdata);
+	clue_lengths(puzdata);
 }
 
 function isLetter(str) {
@@ -34,5 +35,61 @@ function clue_initial_letters(puzdata)
     }
     
     document.getElementById(clues_render_to).innerHTML += 'First letters of clues:<br />' + letters.join(' ') + '<br /><br />';
+}
+
+function clue_lengths(puzdata)
+{
+	// Display the number of clues for each length
+	var clue_lists = [puzdata.across_clues, puzdata.down_clues];
+	var categories = ['1','2','3','4','5','6','7','8','9','>= 10'];
+	var data = [];
+	// Initialize the data
+	for (var i=0; i<categories.length; i++)
+	{
+		data.push(0);
+	}
+    for (var j=0; j < clue_lists.length; j++)
+    {
+        clues = clue_lists[j];
+        for (var key in clues)
+        {
+            if (!clues.hasOwnProperty(key))
+                continue;
+            // Find the length of the clue
+			var clue_length = clues[key].split(' ').length;
+			if (clue_length >= 10)
+				clue_length = 10;
+			// Push to "data"
+			data[clue_length-1] += 1;
+        }
+    }
+	data.unshift('Count');
+	// Plot
+	var chart = c3.generate({
+        bindto: '#clues0',
+		title: {
+            text: 'Clue length (number of words)'
+        },
+        data: {
+			columns: [data],
+            type: 'bar',
+			labels: true
+        },
+		size: {
+			// Chart won't render unless we initialize the size up front
+			width: 340
+		},
+		axis: {
+			rotated: true,
+			x: {
+                type: 'category',
+                categories: categories
+            },
+            y: {
+                label: 'Count'
+            }
+		},
+		
+    });
 }
 
