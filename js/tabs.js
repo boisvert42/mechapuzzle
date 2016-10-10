@@ -4,6 +4,8 @@
 var tabLinks = new Array();
 var contentDivs = new Array();
 
+var CHARTS = {};
+
 function init() {
 
     // Grab the tab links and content divs from the page
@@ -14,6 +16,7 @@ function init() {
             var id = getHash( tabLink.getAttribute('href') );
             tabLinks[id] = tabLink;
             contentDivs[id] = document.getElementById( id );
+            CHARTS[id] = [];
         }
     }
 
@@ -46,6 +49,11 @@ function showTab() {
         if ( id == selectedId ) {
             tabLinks[id].className = 'selected';
             contentDivs[id].className = 'tabContent';
+            // Show the charts
+            for (var i=0; i<CHARTS[id].length; i++)
+            {
+                CHARTS[id][i].flush();
+            }
         } else {
             tabLinks[id].className = '';
             contentDivs[id].className = 'tabContent hide';

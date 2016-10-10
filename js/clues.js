@@ -91,5 +91,6 @@ function clue_lengths(puzdata)
 		},
 		
     });
+    CHARTS['clues'].push(chart);
 }
 

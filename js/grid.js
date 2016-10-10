@@ -153,6 +153,7 @@ function letter_frequency(puzdata)
             }
         }
     });
+    CHARTS['grid'].push(chart);
 }
 
 
