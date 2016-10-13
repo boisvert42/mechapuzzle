@@ -3,9 +3,8 @@ var render_to_theme = 'theme_js';
 function render_theme()
 {
     document.getElementById(render_to_theme).innerHTML = '';
-	var puzdata = PUZAPP.puzdata;
-	display_grid(puzdata, render_to_theme);
-    display_theme(puzdata);
+	display_grid(render_to_theme);
+    display_theme();
 }
 
 function display_theme()

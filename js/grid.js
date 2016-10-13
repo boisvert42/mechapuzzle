@@ -6,11 +6,10 @@ var standard_letter_distribution = [11.3, 1.9, 2.9, 3.6, 13.0, 1.1, 2.0, 2.4, 6.
 function render_grid()
 {
     document.getElementById(grid_render_to).innerHTML = '';
-	var puzdata = PUZAPP.puzdata;
-    width_height(puzdata);
-    symmetry(puzdata);
-    display_grid(puzdata, grid_render_to);
-    letter_frequency(puzdata);
+    width_height();
+    symmetry();
+    display_grid(grid_render_to);
+    letter_frequency();
 }
 
 function width_height()
@@ -51,12 +50,11 @@ function mark_theme(ix,dir) {
 
 function display_grid() // display_grid(render_to = NULL, color_grid = NULL)
 {
-    // Mandatory arguments
-    var puzdata = PUZAPP.puzdata;;
+    var puzdata = PUZAPP.puzdata;
     
     // Optional arguments
-	var render_to = (arguments[1] ? arguments[1] : grid_render_to);
-    var color_grid = (arguments[2] ? arguments[2] : null);
+	var render_to = (arguments[0] ? arguments[0] : grid_render_to);
+    var color_grid = (arguments[1] ? arguments[1] : null);
 
     var h = puzdata.height; var w = puzdata.width;
     var sol = puzdata.solution;
