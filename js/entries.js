@@ -3,7 +3,15 @@ var entries_render_to = 'entries_js';
 function render_entries()
 {
     document.getElementById(entries_render_to).innerHTML = '';
+	entry_metadata();
     entry_lengths();
+}
+
+function entry_metadata()
+{
+	var puzdata = PUZAPP.puzdata;
+	var num_entries = puzdata.nbrClues;
+	document.getElementById(entries_render_to).innerHTML += 'Word count: ' + num_entries;
 }
 
 function entry_lengths()
