@@ -1,18 +1,19 @@
 var clues_render_to = 'clues_js';
 
-function render_clues(puzdata)
+function render_clues()
 {
     document.getElementById(clues_render_to).innerHTML = '';
-    clue_initial_letters(puzdata);
-	clue_lengths(puzdata);
+    clue_initial_letters();
+	clue_lengths();
 }
 
 function isLetter(str) {
   return str.length === 1 && str.match(/[a-z]/i);
 }
 
-function clue_initial_letters(puzdata)
+function clue_initial_letters()
 {
+	var puzdata = PUZAPP.puzdata;
     var letters = [];
     var clue_lists = [puzdata.across_clues, puzdata.down_clues];
     for (var j=0; j < clue_lists.length; j++)
@@ -37,9 +38,10 @@ function clue_initial_letters(puzdata)
     document.getElementById(clues_render_to).innerHTML += 'First letters of clues:<br />' + letters.join(' ') + '<br /><br />';
 }
 
-function clue_lengths(puzdata)
+function clue_lengths()
 {
 	// Display the number of clues for each length
+	var puzdata = PUZAPP.puzdata;
 	var clue_lists = [puzdata.across_clues, puzdata.down_clues];
 	var categories = ['1','2','3','4','5','6','7','8','9','>= 10'];
 	var data = [];

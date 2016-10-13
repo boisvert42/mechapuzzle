@@ -1,13 +1,16 @@
 var render_to_theme = 'theme_js';
 
-function render_theme(puzdata)
+function render_theme()
 {
     document.getElementById(render_to_theme).innerHTML = '';
+	var puzdata = PUZAPP.puzdata;
+	display_grid(puzdata, render_to_theme);
     display_theme(puzdata);
 }
 
-function display_theme(puzdata)
+function display_theme()
 {
+	var puzdata = PUZAPP.puzdata;
     var min_theme_len = 9;
     document.getElementById(render_to_theme).style.fontFamily = "monospace";
 

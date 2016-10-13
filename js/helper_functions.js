@@ -1,17 +1,18 @@
-function render_all(puzdata)
+function render_all()
 {
-	render_metadata(puzdata);
-    render_grid(puzdata);
-    render_theme(puzdata);
-    render_clues(puzdata);
+	render_metadata();
+    render_grid();
+    render_theme();
+    render_clues();
     //render_entries(puzdata);
     
     // This is just to show the raw data for development purposes
-    document.getElementById('rawdata_js').innerHTML = JSON.stringify(puzdata, null, ' ');
+    document.getElementById('rawdata_js').innerHTML = JSON.stringify(PUZAPP.puzdata, null, ' ');
 }
 
-function render_metadata(puzdata)
+function render_metadata()
 {
+	var puzdata = PUZAPP.puzdata;
 	document.getElementById('metadata').innerHTML = '';
 	document.getElementById('metadata').innerHTML += puzdata.title + '<br />';
 	document.getElementById('metadata').innerHTML += puzdata.author + '<br />';

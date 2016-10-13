@@ -46,6 +46,7 @@ table.grid td {
     text-align: center;
     vertical-align: top;
     background-color: #EEEEEE;
+	font-family: 'Lucida Grande', Verdana, Arial, Sans-Serif;
 }
 
 table.grid td.black {

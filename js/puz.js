@@ -359,6 +359,8 @@ var ActiveXObject, parsedPuz, filecontents, PUZAPP = {};
         retval.across_clues = across_clues;
         retval.down_clues = down_clues;
         retval.down_entries = down_entries;
+		
+		PUZAPP.puzdata = retval;
         
         return retval;
     }
@@ -375,7 +377,7 @@ var ActiveXObject, parsedPuz, filecontents, PUZAPP = {};
 		return parsedPuz;
 	}
     
-    PUZAPP.puzdata = puzdata;
+    PUZAPP.parsepuz = parsePuz;
 
 }());
 

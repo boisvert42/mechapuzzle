@@ -3,17 +3,19 @@ var colors = ['aqua','gold','chartreuse','greenyellow','lightskyblue','orange','
 
 var standard_letter_distribution = [11.3, 1.9, 2.9, 3.6, 13.0, 1.1, 2.0, 2.4, 6.3, 0.3, 1.1, 5.1, 2.9, 6.0, 7.7, 2.9, 0.1, 6.9, 8.8, 7.2, 2.4, 0.8, 1.1, 0.3, 1.6, 0.3];
 
-function render_grid(puzdata)
+function render_grid()
 {
     document.getElementById(grid_render_to).innerHTML = '';
+	var puzdata = PUZAPP.puzdata;
     width_height(puzdata);
     symmetry(puzdata);
-    display_grid(puzdata);
+    display_grid(puzdata, grid_render_to);
     letter_frequency(puzdata);
 }
 
-function width_height(puzdata)
+function width_height()
 {
+	var puzdata = PUZAPP.puzdata;
     var width_height = puzdata.width + 'x' + puzdata.height;
     var is_unusual_size = false;
     if (puzdata.width != 15 || puzdata.height != 15) { is_unusual_size = true;}
@@ -21,8 +23,9 @@ function width_height(puzdata)
     document.getElementById(grid_render_to).innerHTML += 'Grid size: ' + width_height + '<br />\n';
 }
 
-function symmetry(puzdata)
+function symmetry()
 {
+	var puzdata = PUZAPP.puzdata;
     var sol = puzdata.solution;
     var sol_length = sol.length;
     var is_symmetric = true;
@@ -41,13 +44,19 @@ function symmetry(puzdata)
 
 /** Helper function to get across and down clues from a square **/
 
-function display_grid() // display_grid(puzdata, color_grid = NULL)
+function mark_theme(ix,dir) {
+	// Grab the [across/down] entry corresponding to the index and mark it as theme
+	return false;
+}
+
+function display_grid() // display_grid(render_to = NULL, color_grid = NULL)
 {
     // Mandatory arguments
-    var puzdata = arguments[0];
+    var puzdata = PUZAPP.puzdata;;
     
     // Optional arguments
-    var color_grid = (arguments[1] ? arguments[1] : null);
+	var render_to = (arguments[1] ? arguments[1] : grid_render_to);
+    var color_grid = (arguments[2] ? arguments[2] : null);
 
     var h = puzdata.height; var w = puzdata.width;
     var sol = puzdata.solution;
@@ -80,7 +89,8 @@ function display_grid() // display_grid(puzdata, color_grid = NULL)
 				div_class_array.push('circle');
 			}
 			var div_class = ' class="' + div_class_array.join(' ') + '"';
-            grid_html += '<td' + td_class + '>\n';
+            grid_html += '<td' + td_class + ' onclick="mark_theme(' + grid_index + ',\'across\');return false;" ';
+			grid_html += 'oncontextmenu="mark_theme(' + grid_index + ',\'down\');return false;">\n';
 			grid_html += '  <div' + div_class + '>\n';
 			grid_html += '    <div class="number">' + gn[grid_index] + '</div>\n';
 			grid_html += '    <div class="letter">' + sol_at_index + '</div>\n';
@@ -95,11 +105,12 @@ function display_grid() // display_grid(puzdata, color_grid = NULL)
     }
     grid_html += '</table>';
 	//console.log(grid_html);
-    document.getElementById(grid_render_to).innerHTML += grid_html + '<br />\n';
+    document.getElementById(render_to).innerHTML += grid_html + '<br />\n';
 }
 
-function letter_frequency(puzdata)
+function letter_frequency()
 {
+	var puzdata = PUZAPP.puzdata;
     var sol = puzdata.solution;
     // Container for letter counts
     var letter_counts = [];

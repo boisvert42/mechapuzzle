@@ -101,8 +101,8 @@ function handleFileSelect(evt) {
                 return function(e) { 
                     var contents = e.target.result;
                     var elt = document.getElementById('puzjs_output');
-                    var puzdata = PUZAPP.puzdata(contents);
-                    render_all(puzdata);
+                    var puzdata = PUZAPP.parsepuz(contents);
+                    render_all();
                 };
             })(f);
             r.readAsBinaryString(f);
