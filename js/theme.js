@@ -11,7 +11,7 @@ function display_theme()
 {
     var puzdata = PUZAPP.puzdata;
     var min_theme_len = 9;
-    document.getElementById(render_to_theme).style.fontFamily = "monospace";
+    //document.getElementById(render_to_theme).style.fontFamily = "monospace";
 
     document.getElementById(render_to_theme).innerHTML += '(across entries of length > ' + min_theme_len  + ')<br />\n\n';
     var potential_across_theme_entries = getStringsOfAtLeastMinLength(puzdata.across_entries, min_theme_len);
