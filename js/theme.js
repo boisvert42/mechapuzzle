@@ -3,34 +3,50 @@ var render_to_theme = 'theme_js';
 function render_theme()
 {
     document.getElementById(render_to_theme).innerHTML = '';
-	display_grid(render_to_theme);
+    display_grid(render_to_theme);
     display_theme();
 }
 
 function display_theme()
 {
-	var puzdata = PUZAPP.puzdata;
+    var puzdata = PUZAPP.puzdata;
     var min_theme_len = 9;
     document.getElementById(render_to_theme).style.fontFamily = "monospace";
 
     document.getElementById(render_to_theme).innerHTML += '(across entries of length > ' + min_theme_len  + ')<br />\n\n';
-    var potential_across_theme_entries = getStringsOfMinLength(puzdata.across_entries, min_theme_len);
-    var longest_common_substring_across = longestCommonSubstringFromMultipleStrings.apply(null, potential_across_theme_entries);
-    document.getElementById(render_to_theme).innerHTML += "longest common substring: " + (longest_common_substring_across.length > 0 ? longest_common_substring_across : '&lt;none&gt;') + '<br />\n';
-    for (var i = 0; i < potential_across_theme_entries.length; ++i) {
-        document.getElementById(render_to_theme).innerHTML += markSubstring(potential_across_theme_entries[i], longest_common_substring_across) + '<br />\n';
+    var potential_across_theme_entries = getStringsOfAtLeastMinLength(puzdata.across_entries, min_theme_len);
+//    document.getElementById(render_to_theme).innerHTML += '**' + potential_across_theme_entries + ': ' + potential_across_theme_entries.length + '**'
+    if (potential_across_theme_entries.length == 0) {
+        document.getElementById(render_to_theme).innerHTML += '&lt;none&gt;' + '<br />\n';
+    } else {
+        longest_common_substrings_across = longestCommonSubstringsFromMultipleStrings.apply(null, potential_across_theme_entries);
+        for (i_substr = 0; i_substr < longest_common_substrings_across.length; ++i_substr) {
+            var longest_common_substring_across = longest_common_substrings_across[i_substr];
+            document.getElementById(render_to_theme).innerHTML += "<br />\nlongest common substring: " + (longest_common_substring_across.length > 0 ? longest_common_substring_across : '&lt;none&gt;') + '<br />\n';
+            for (var i = 0; i < potential_across_theme_entries.length; ++i) {
+                document.getElementById(render_to_theme).innerHTML += markSubstring(potential_across_theme_entries[i], longest_common_substring_across) + '<br />\n';
+            }
+        }
     }
 
-    document.getElementById(render_to_theme).innerHTML += '<br />\n(down entries of length > ' + min_theme_len  + ')<br />\n\n';
-    var potential_down_theme_entries = getStringsOfMinLength(puzdata.down_entries, min_theme_len);
-    var longest_common_substring_down = longestCommonSubstringFromMultipleStrings.apply(null, potential_down_theme_entries);
-    document.getElementById(render_to_theme).innerHTML += "longest common substring: " + (longest_common_substring_down.length > 0 ? longest_common_substring_down : '&lt;none&gt;') + '<br />\n';
-    for (var i = 0; i < potential_down_theme_entries.length; ++i) {
-        document.getElementById(render_to_theme).innerHTML += markSubstring(potential_down_theme_entries[i], longest_common_substring_down) + '<br />\n';
+    document.getElementById(render_to_theme).innerHTML += '<br /><br /><br />\n\n\n(down entries of length > ' + min_theme_len  + ')<br />\n\n';
+    var potential_down_theme_entries = getStringsOfAtLeastMinLength(puzdata.down_entries, min_theme_len);
+    if (potential_down_theme_entries.length == 0) {
+        document.getElementById(render_to_theme).innerHTML += '&lt;none&gt;' + '<br />\n';
+    } else {
+        longest_common_substrings_down = longestCommonSubstringsFromMultipleStrings.apply(null, potential_down_theme_entries);
+        for (i_substr = 0; i_substr < longest_common_substrings_down.length; ++i_substr) {
+            var longest_common_substring_down = longest_common_substrings_down[i_substr];
+            document.getElementById(render_to_theme).innerHTML += "<br />\nlongest common substring: " + (longest_common_substring_down.length > 0 ? longest_common_substring_down : '&lt;none&gt;') + '<br />\n';
+            for (var i = 0; i < potential_down_theme_entries.length; ++i) {
+                document.getElementById(render_to_theme).innerHTML += markSubstring(potential_down_theme_entries[i], longest_common_substring_down) + '<br />\n';
+            }
+        }
     }
 }
 
 // returns a version of {string} with {substring} marked (by <mark></mark> tag)
+// TODO: only highlights first instance of substring (per string)--do something else?
 function markSubstring(string, substring)
 {
     var retval = "";
@@ -44,12 +60,12 @@ function markSubstring(string, substring)
 }
 
 // returns all strings from {strings} of length at least {min_len}
-function getStringsOfMinLength(strings, min_len)
+function getStringsOfAtLeastMinLength(strings, min_len)
 {
     var retval = [];
 
-    for (var num in strings) {
-        var entry = strings[num];
+    for (var i in strings) {
+        var entry = strings[i];
         if (entry.length >= min_len) {
             retval.push(entry);
         }
@@ -58,67 +74,54 @@ function getStringsOfMinLength(strings, min_len)
     return retval;
 }
 
-// returns the longest substring common to {arguments}
-function longestCommonSubstringFromMultipleStrings()
+// returns the longest substrings common to {arguments}
+function longestCommonSubstringsFromMultipleStrings()
 {
     if (arguments.length === 0) {
         return ""; // TODO: do something else (e.g., throw an exception)?
     }
 
-    var retval = arguments[0];
-    for (var i = 1; i < arguments.length; ++i) {
-        retval = longestCommonSubstringFromTwoStrings(retval, arguments[i]);
+    var substringToSourcesMap = {};
+    for (var iArg = 0; iArg < arguments.length; ++iArg) {
+        var s = arguments[iArg];
+        for (var i = 0; i < s.length; ++i) {
+            for (var j = i; j <= s.length; ++j) {
+                var substring = s.slice(i, j);
+                addKeyValuePairToMultimap(substringToSourcesMap, substring, s);
+            }
+        }
+    }
+
+    var retval = [];
+    var maxCommonSubstringLen = -1;
+    for (var substring in substringToSourcesMap) {
+//        if (!substringToSourcesMap.hasOwnProperty(substring)) { // TODO: is this needed? is this also needed for other for-in constructs?
+//            continue;
+//        }
+
+        if (substring.length < maxCommonSubstringLen) {
+            continue;
+        }
+        if (substringToSourcesMap[substring].length == arguments.length) {
+            if (substring.length > maxCommonSubstringLen) {
+                maxCommonSubstringLen = substring.length;
+                retval = [];
+            }
+
+            retval.push(substring); // when here, substring.length >= (immediately previous value of) maxCommonSubstringLen
+        }
     }
 
     return retval;
 }
 
-// returns the longest substring common to {str1} and {str2} (from https://en.wikibooks.org/wiki/Algorithm_Implementation/Strings/Longest_common_substring#JavaScript)
-function longestCommonSubstringFromTwoStrings(str1, str2) {
-    if (!str1 || !str2) {
-        return "";
+// bare-bones multimap implementation
+function addKeyValuePairToMultimap(multimap, key, value) {
+    if (!(key in multimap)) {
+        multimap[key] = [];
     }
 
-    var sequence = "",
-        str1Length = str1.length,
-        str2Length = str2.length,
-        num = new Array(str1Length),
-        maxlen = 0,
-        lastSubsBegin = 0;
-
-    for (var i = 0; i < str1Length; ++i) {
-        var subArray = new Array(str2Length);
-        for (var j = 0; j < str2Length; ++j) {
-            subArray[j] = 0;
-        }
-        num[i] = subArray;
+    if (multimap[key].indexOf(value) == -1) { // TODO: better way to do this?
+        multimap[key].push(value);
     }
-    var thisSubsBegin = null;
-    for (var i = 0; i < str1Length; ++i) {
-        for (var j = 0; j < str2Length; ++j) {
-            if (str1[i] !== str2[j]) {
-                num[i][j] = 0;
-            } else {
-                if ((i === 0) || (j === 0)) {
-                    num[i][j] = 1;
-                } else {
-                    num[i][j] = 1 + num[i - 1][j - 1];
-                }
-
-                if (num[i][j] > maxlen) {
-                    maxlen = num[i][j];
-                    thisSubsBegin = i - num[i][j] + 1;
-                    if (lastSubsBegin === thisSubsBegin) {//if the current LCS is the same as the last time this block ran
-                        sequence += str1[i];
-                    } else { //this block resets the string builder if a different LCS is found
-                        lastSubsBegin = thisSubsBegin;
-                        sequence= ""; //clear it
-                        sequence += str1.substr(lastSubsBegin, (i + 1) - lastSubsBegin);
-                    }
-                }
-            }
-        }
-    }
-
-    return sequence;
 }
