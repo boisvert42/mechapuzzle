@@ -4,7 +4,7 @@ function render_clues()
 {
     document.getElementById(clues_render_to).innerHTML = '';
     clue_initial_letters();
-	clue_lengths();
+    clue_lengths();
     starred_clues();
 }
 
