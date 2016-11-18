@@ -5,6 +5,7 @@ function render_clues()
     document.getElementById(clues_render_to).innerHTML = '';
     clue_initial_letters();
 	clue_lengths();
+    starred_clues();
 }
 
 function isLetter(str) {
@@ -96,3 +97,36 @@ function clue_lengths()
     CHARTS['clues'].push(chart);
 }
 
+function starred_clues() {
+
+    var puzdata = PUZAPP.puzdata;
+    var starred_clues = [];
+    var starred_clues = getStringsPreOrPostfixedWith(puzdata.across_clues, '*', 'A');
+    var starred_down = getStringsPreOrPostfixedWith(puzdata.down_clues, '*', 'D');
+    starred_clues.push(starred_down);
+   
+    document.getElementById(clues_render_to).innerHTML += 'Starred clues:<br />\n\n';
+
+    if (starred_clues.length == 0) {
+        document.getElementById(clues_render_to).innerHTML += '&lt;none&gt;' + '<br />\n';
+    } else {
+        for (var i = 0; i < starred_clues.length; ++i) {
+            document.getElementById(clues_render_to).innerHTML += starred_clues[i] + "<br />\n";
+        }
+        document.getElementById(clues_render_to).innerHTML += "\n<br />\n";
+    }
+}
+
+function getStringsPreOrPostfixedWith(strings, token, type) {
+   
+    var retval = [];
+
+    for (var i in strings) {
+        if(strings[i].startsWith(token) || strings[i].endsWith(token)) {
+            // console.log(i + type + " " + strings[i]);
+            retval.push(i + type + " " + strings[i]);
+        }
+    }
+
+    return retval;
+}
