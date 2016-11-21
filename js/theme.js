@@ -6,12 +6,13 @@ function render_theme()
     display_grid(render_to_theme);
 
 
+    // TODO?: is there a "better" way to do that--instead of just building strings with HTML, is there something offered by Javascript that is somehow better?
     potential_theme_entries_lists = '<ul>';
 
     potential_theme_entries_lists += get_heading_in_list_item('STARRED CLUES');
     potential_theme_entries_lists += get_starred_clues(PUZAPP.puzdata);
 
-    min_theme_len = 9;
+    min_theme_len = 9; // TODO?: allow user to pick?
     potential_theme_entries_lists += get_heading_in_list_item('LONG ENTRIES');
     potential_theme_entries_lists += get_long_entries_and_their_common_substrings(PUZAPP.puzdata, min_theme_len);
 
@@ -29,7 +30,7 @@ function get_heading_in_list_item(title)
 
 
 function get_starred_clues(puzdata) {
-    retval = '';
+    var retval = '';
 
     var starred_across = getCluesPreOrPostfixedWith(puzdata.across_clues, '*', puzdata.across_entries, 'A');
     var starred_down = getCluesPreOrPostfixedWith(puzdata.down_clues, '*', puzdata.down_entries, 'D');
@@ -65,7 +66,7 @@ function getCluesPreOrPostfixedWith(clues, token, entries, type) {
 
 function get_long_entries_and_their_common_substrings(puzdata, min_theme_len)
 {
-    retval = '';
+    var retval = '';
 
     //document.getElementById(render_to_theme).style.fontFamily = "monospace";
 
@@ -73,45 +74,36 @@ function get_long_entries_and_their_common_substrings(puzdata, min_theme_len)
 
     // TODO: stop (essentially) duplicating code (i.e., the next 15 lines--for across, then for down)
     retval += '<li>(across entries of length > ' + min_theme_len  + ')</li>';
-    var potential_across_theme_entries = getStringsOfAtLeastMinLength(puzdata.across_entries, min_theme_len);
-//    retval += '**' + potential_across_theme_entries + ': ' + potential_across_theme_entries.length + '**'
-    if (potential_across_theme_entries.length == 0) {
-        retval += '&lt;none&gt;' + '<br />\n';
-    } else {
-        retval += '<ul>';
-        longest_common_substrings_across = longestCommonSubstringsFromMultipleStrings.apply(null, potential_across_theme_entries);
-        for (i_substr = 0; i_substr < longest_common_substrings_across.length; ++i_substr) {
-            var longest_common_substring_across = longest_common_substrings_across[i_substr];
-            retval += '<li>\nlongest common substring: ' + (longest_common_substring_across.length > 0 ? longest_common_substring_across : '&lt;none&gt;') + '</li>\n';
-            retval += '<ul>'
-            for (var i = 0; i < potential_across_theme_entries.length; ++i) {
-                retval += '<li>' + markSubstring(potential_across_theme_entries[i], longest_common_substring_across) + '</li>\n';
-            }
-            retval += '</ul>'
-        }
-        retval += '</ul>';
-    }
+    retval += get_one_directions_long_entries_and_their_common_substrings(puzdata.across_entries, min_theme_len);
 
     retval += '<li>(down entries of length > ' + min_theme_len  + ')</li>\n\n';
-    var potential_down_theme_entries = getStringsOfAtLeastMinLength(puzdata.down_entries, min_theme_len);
-    if (potential_down_theme_entries.length == 0) {
+    retval += get_one_directions_long_entries_and_their_common_substrings(puzdata.down_entries, min_theme_len);
+
+    retval += '</ul>';
+
+    return retval;
+}
+
+function get_one_directions_long_entries_and_their_common_substrings(entries, min_theme_len) {
+    var retval = '';
+
+    var potential_theme_entries = getStringsOfAtLeastMinLength(entries, min_theme_len);
+    if (potential_theme_entries.length == 0) {
         retval += '&lt;none&gt;' + '<br />\n';
     } else {
         retval += '<ul>';
-        longest_common_substrings_down = longestCommonSubstringsFromMultipleStrings.apply(null, potential_down_theme_entries);
-        for (i_substr = 0; i_substr < longest_common_substrings_down.length; ++i_substr) {
-            var longest_common_substring_down = longest_common_substrings_down[i_substr];
-            retval += '<li>\nlongest common substring: ' + (longest_common_substring_down.length > 0 ? longest_common_substring_down : '&lt;none&gt;') + '</li>\n';
+        longest_common_substrings = longestCommonSubstringsFromMultipleStrings.apply(null, potential_theme_entries);
+        for (i_substr = 0; i_substr < longest_common_substrings.length; ++i_substr) {
+            var longest_common_substring = longest_common_substrings[i_substr];
+            retval += '<li>\nlongest common substring: ' + (longest_common_substring.length > 0 ? longest_common_substring : '&lt;none&gt;') + '</li>\n';
             retval += '<ul>'
-            for (var i = 0; i < potential_down_theme_entries.length; ++i) {
-                retval += '<li>' + markSubstring(potential_down_theme_entries[i], longest_common_substring_down) + '</li>\n';
+            for (var i = 0; i < potential_theme_entries.length; ++i) {
+                retval += '<li>' + markSubstring(potential_theme_entries[i], longest_common_substring) + '</li>\n';
             }
             retval += '</ul>'
         }
         retval += '</ul>';
     }
-
-    retval += '</ul>';
 
     return retval;
 }
@@ -120,7 +112,7 @@ function get_long_entries_and_their_common_substrings(puzdata, min_theme_len)
 // TODO: only highlights first instance of substring (per string)--do something else?
 function markSubstring(string, substring)
 {
-    var retval = "";
+    var retval = '';
 
     var substring_start_index = string.indexOf(substring);
     retval += string.substring(0, substring_start_index);
@@ -149,7 +141,7 @@ function getStringsOfAtLeastMinLength(strings, min_len)
 function longestCommonSubstringsFromMultipleStrings()
 {
     if (arguments.length === 0) {
-        return ""; // TODO: do something else (e.g., throw an exception)?
+        return ''; // TODO: do something else (e.g., throw an exception)?
     }
 
     var substringToSourcesMap = {};
