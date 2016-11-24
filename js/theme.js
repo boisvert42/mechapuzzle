@@ -1,7 +1,6 @@
 var render_to_theme = 'theme_js';
 
-function render_theme()
-{
+function render_theme() {
     document.getElementById(render_to_theme).innerHTML = '';
     display_grid(render_to_theme);
 
@@ -22,11 +21,9 @@ function render_theme()
 }
 
 // TODO: fancy this up?
-function get_heading_in_list_item(title)
-{
+function get_heading_in_list_item(title) {
     return '<li>' + title + '</li>';
 }
-
 
 
 function get_starred_clues(puzdata) {
@@ -63,9 +60,7 @@ function getCluesPreOrPostfixedWith(clues, token, entries, type) {
 }
 
 
-
-function get_long_entries_and_their_common_substrings(puzdata, min_theme_len)
-{
+function get_long_entries_and_their_common_substrings(puzdata, min_theme_len) {
     var retval = '';
 
     //document.getElementById(render_to_theme).style.fontFamily = "monospace";
@@ -73,10 +68,10 @@ function get_long_entries_and_their_common_substrings(puzdata, min_theme_len)
     retval += '<ul>';
 
     // TODO: stop (essentially) duplicating code (i.e., the next 15 lines--for across, then for down)
-    retval += '<li>(across entries of length > ' + min_theme_len  + ')</li>';
+    retval += '<li>(across entries of length > ' + min_theme_len + ')</li>';
     retval += get_one_directions_long_entries_and_their_common_substrings(puzdata.across_entries, min_theme_len);
 
-    retval += '<li>(down entries of length > ' + min_theme_len  + ')</li>\n\n';
+    retval += '<li>(down entries of length > ' + min_theme_len + ')</li>\n\n';
     retval += get_one_directions_long_entries_and_their_common_substrings(puzdata.down_entries, min_theme_len);
 
     retval += '</ul>';
@@ -110,8 +105,7 @@ function get_one_directions_long_entries_and_their_common_substrings(entries, mi
 
 // returns a version of {string} with {substring} marked (by <mark></mark> tag)
 // TODO: only highlights first instance of substring (per string)--do something else?
-function markSubstring(string, substring)
-{
+function markSubstring(string, substring) {
     var retval = '';
 
     var substring_start_index = string.indexOf(substring);
@@ -123,8 +117,7 @@ function markSubstring(string, substring)
 }
 
 // returns all strings from {strings} of length at least {min_len}
-function getStringsOfAtLeastMinLength(strings, min_len)
-{
+function getStringsOfAtLeastMinLength(strings, min_len) {
     var retval = [];
 
     for (var i in strings) {
@@ -138,8 +131,7 @@ function getStringsOfAtLeastMinLength(strings, min_len)
 }
 
 // returns the longest substrings common to {arguments}
-function longestCommonSubstringsFromMultipleStrings()
-{
+function longestCommonSubstringsFromMultipleStrings() {
     if (arguments.length === 0) {
         return ''; // TODO: do something else (e.g., throw an exception)?
     }
