@@ -23,7 +23,7 @@ function entry_lengths() {
         data.push(0);
     }
     for (var j = 0; j < entry_lists.length; j++) {
-        entries = entry_lists[j];
+        var entries = entry_lists[j];
         for (var key in entries) {
             if (!entries.hasOwnProperty(key))
                 continue;

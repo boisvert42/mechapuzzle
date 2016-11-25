@@ -6,12 +6,13 @@ function render_theme() {
 
 
     // TODO?: is there a "better" way to do that--instead of just building strings with HTML, is there something offered by Javascript that is somehow better?
-    potential_theme_entries_lists = '<ul>';
+    // (DOM, apparently?)
+    var potential_theme_entries_lists = '<ul>';
 
     potential_theme_entries_lists += get_heading_in_list_item('STARRED CLUES');
     potential_theme_entries_lists += get_starred_clues(PUZAPP.puzdata);
 
-    min_theme_len = 9; // TODO?: allow user to pick?
+    var min_theme_len = 9; // TODO?: allow user to pick?
     potential_theme_entries_lists += get_heading_in_list_item('LONG ENTRIES');
     potential_theme_entries_lists += get_long_entries_and_their_common_substrings(PUZAPP.puzdata, min_theme_len);
 
@@ -87,11 +88,11 @@ function get_one_directions_long_entries_and_their_common_substrings(entries, mi
         retval += '&lt;none&gt;' + '<br />\n';
     } else {
         retval += '<ul>';
-        longest_common_substrings = longestCommonSubstringsFromMultipleStrings.apply(null, potential_theme_entries);
-        for (i_substr = 0; i_substr < longest_common_substrings.length; ++i_substr) {
+        var longest_common_substrings = longestCommonSubstringsFromMultipleStrings.apply(null, potential_theme_entries);
+        for (var i_substr = 0; i_substr < longest_common_substrings.length; ++i_substr) {
             var longest_common_substring = longest_common_substrings[i_substr];
             retval += '<li>\nlongest common substring: ' + (longest_common_substring.length > 0 ? longest_common_substring : '&lt;none&gt;') + '</li>\n';
-            retval += '<ul>'
+            retval += '<ul>';
             for (var i = 0; i < potential_theme_entries.length; ++i) {
                 retval += '<li>' + markSubstring(potential_theme_entries[i], longest_common_substring) + '</li>\n';
             }

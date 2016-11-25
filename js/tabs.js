@@ -1,8 +1,8 @@
 /** Thank you http://callmenick.com/post/simple-responsive-tabs-javascript-css **/
 //<![CDATA[
 
-var tabLinks = new Array();
-var contentDivs = new Array();
+var tabLinks = [];
+var contentDivs = [];
 
 var CHARTS = {};
 
@@ -22,7 +22,7 @@ function init() {
 
     // Assign onclick events to the tab links, and
     // highlight the first tab
-    var i = 0;
+    i = 0;
 
     for (var id in tabLinks) {
         tabLinks[id].onclick = showTab;
@@ -34,9 +34,9 @@ function init() {
     }
 
     // Hide all content divs except the first
-    var i = 0;
+    i = 0;
 
-    for (var id in contentDivs) {
+    for (id in contentDivs) {
         if (i != 0) contentDivs[id].className = 'tabContent hide';
         i++;
     }

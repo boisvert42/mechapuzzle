@@ -1,6 +1,6 @@
 body {
     font-size: 80%;
-    font-family: 'Lucida Grande', Verdana, Arial, Sans-Serif;
+    font-family: 'Lucida Grande', Verdana, Arial, sans-serif;
 }
 
 ul#tabs {
@@ -59,7 +59,7 @@ table.grid td {
     text-align: center;
     vertical-align: top;
     background-color: #EEEEEE;
-    font-family: 'Lucida Grande', Verdana, Arial, Sans-Serif;
+    font-family: 'Lucida Grande', Verdana, Arial, sans-serif;
 }
 
 table.grid td.black {

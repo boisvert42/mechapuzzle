@@ -15,7 +15,7 @@ function clue_initial_letters() {
     var letters = [];
     var clue_lists = [puzdata.across_clues, puzdata.down_clues];
     for (var j = 0; j < clue_lists.length; j++) {
-        clues = clue_lists[j];
+        var clues = clue_lists[j];
         for (var key in clues) {
             if (!clues.hasOwnProperty(key))
                 continue;
@@ -43,7 +43,7 @@ function clue_lengths() {
         data.push(0);
     }
     for (var j = 0; j < clue_lists.length; j++) {
-        clues = clue_lists[j];
+        var clues = clue_lists[j];
         for (var key in clues) {
             if (!clues.hasOwnProperty(key))
                 continue;
