@@ -1,116 +1,117 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width" />
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width"/>
 
-<link rel="stylesheet" type="text/css" href="css/styles.css" />
-<link href="css/c3.min.css" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" type="text/css" href="css/styles.css"/>
+    <link href="css/c3.min.css" rel="stylesheet" type="text/css">
 
-<script src="js/tabs.js"></script>
-<script src="js/grid.js"></script>
-<script src="js/theme.js"></script>
-<script src="js/clues.js"></script>
-<script src="js/entries.js"></script>
-<script src="js/helper_functions.js"></script>
-<script src="js/puz.js"></script>
+    <script src="js/tabs.js"></script>
+    <script src="js/grid.js"></script>
+    <script src="js/theme.js"></script>
+    <script src="js/clues.js"></script>
+    <script src="js/entries.js"></script>
+    <script src="js/helper_functions.js"></script>
+    <script src="js/puz.js"></script>
 
-<!-- Load d3.js and c3.js -->
-<script src="js/d3.v3.min.js" charset="utf-8"></script>
-<script src="js/c3.min.js"></script>
+    <!-- Load d3.js and c3.js -->
+    <script src="js/d3.v3.min.js" charset="utf-8"></script>
+    <script src="js/c3.min.js"></script>
 
-<title>Mechapuzzle</title>
+    <title>Mechapuzzle</title>
 </head>
+
 
 <body onload="init()">
 
 <p>Select a solved .puz file to analyze.</p>
-<input type="file" id="files" name="files" />
-<br /><br />
+<input type="file" id="files" name="files"/>
+<br/><br/>
 <div id="metadata"></div>
 
 
 <ul id="tabs">
-<li><a href="#grid">Grid</a></li>
-<li><a href="#theme">Theme</a></li>
-<li><a href="#clues">Clues</a></li>
-<li><a href="#entries">Entries</a></li>
-<li><a href="#rawdata">Rawdata</a></li>
+    <li><a href="#grid">Grid</a></li>
+    <li><a href="#theme">Theme</a></li>
+    <li><a href="#clues">Clues</a></li>
+    <li><a href="#entries">Entries</a></li>
+    <li><a href="#rawdata">Rawdata</a></li>
 </ul>
 
 
-
 <div class="tabContent" id="grid">
-  <h2>Grid</h2>
-  <div id="grid_js"></div>
-<div id="grid0"></div>
-<div id="grid1"></div>
-<div id="grid2"></div>
+    <h2>Grid</h2>
+    <div id="grid_js"></div>
+    <div id="grid0"></div>
+    <div id="grid1"></div>
+    <div id="grid2"></div>
 </div>
 
 <div class="tabContent" id="theme">
-  <h2>Theme</h2>
-  <div id="theme_js"></div>
-<div id="theme0"></div>
-<div id="theme1"></div>
-<div id="theme2"></div>
+    <h2>Theme</h2>
+    <div id="theme_js"></div>
+    <div id="theme0"></div>
+    <div id="theme1"></div>
+    <div id="theme2"></div>
 </div>
 
 <div class="tabContent" id="clues">
-  <h2>Clues</h2>
-  <div id="clues_js"></div>
-<div id="clues0"></div>
-<div id="clues1"></div>
-<div id="clues2"></div>
+    <h2>Clues</h2>
+    <div id="clues_js"></div>
+    <div id="clues0"></div>
+    <div id="clues1"></div>
+    <div id="clues2"></div>
 </div>
 
 <div class="tabContent" id="entries">
-  <h2>Entries</h2>
-  <div id="entries_js"></div>
-<div id="entries0"></div>
-<div id="entries1"></div>
-<div id="entries2"></div>
+    <h2>Entries</h2>
+    <div id="entries_js"></div>
+    <div id="entries0"></div>
+    <div id="entries1"></div>
+    <div id="entries2"></div>
 </div>
 
 <div class="tabContent" id="rawdata">
-  <h2>Rawdata</h2>
-  <div id="rawdata_js"></div>
-<div id="rawdata0"></div>
-<div id="rawdata1"></div>
-<div id="rawdata2"></div>
+    <h2>Rawdata</h2>
+    <div id="rawdata_js"></div>
+    <div id="rawdata0"></div>
+    <div id="rawdata1"></div>
+    <div id="rawdata2"></div>
 </div>
 
 
 <script type="text/javascript">
-function handleFileSelect(evt) {
-    var files = evt.target.files; // FileList object
+    function handleFileSelect(evt) {
+        var files = evt.target.files; // FileList object
 
-    // files is a FileList of File objects.
-    var output = [];
-    for (var i = 0, f; f = files[i]; i++) {
+        // files is a FileList of File objects.
+        var output = [];
+        for (var i = 0, f; f = files[i]; i++) {
 
-        // Only process small files.
-        if (f.size >= 7500) {
-            alert('This file is too big.');
-            continue;
-        }
-        if (f) {
-            var r = new FileReader();
-            r.onload = (function(theFile) {
-                return function(e) { 
-                    var contents = e.target.result;
-                    var elt = document.getElementById('puzjs_output');
-                    var puzdata = PUZAPP.parsepuz(contents);
-                    render_all();
-                };
-            })(f);
-            r.readAsBinaryString(f);
-        } else { 
-            alert("Failed to load file");
+            // Only process small files.
+            if (f.size >= 7500) {
+                alert('This file is too big.');
+                continue;
+            }
+            if (f) {
+                var r = new FileReader();
+                r.onload = (function (theFile) {
+                    return function (e) {
+                        var contents = e.target.result;
+                        var elt = document.getElementById('puzjs_output');
+                        var puzdata = PUZAPP.parsepuz(contents);
+                        render_all();
+                    };
+                })(f);
+                r.readAsBinaryString(f);
+            } else {
+                alert("Failed to load file");
+            }
         }
     }
-}
-document.getElementById('files').addEventListener('change', handleFileSelect, false);
+    document.getElementById('files').addEventListener('change', handleFileSelect, false);
 </script>
-</body></html>
+</body>
+</html>
