@@ -113,7 +113,7 @@ function letter_frequency() {
         letter_counts[i] = 0.0;
     }
     var total_letters = 0;
-    for (var i = 0; i < sol.length; i++) {
+    for (i = 0; i < sol.length; i++) {
         var mychar = sol.charAt(i);
         if (mychar != '.') {
             var num = sol.charCodeAt(i) - 65;
@@ -123,19 +123,19 @@ function letter_frequency() {
     }
     // Divide by total_letters
     var letter_freq = [];
-    for (var i = 0; i < 26; i++) {
+    for (i = 0; i < 26; i++) {
         letter_freq[i] = 100 * letter_counts[i] / total_letters;
     }
 
     // Array of letters
     var letters = [];
-    for (var i = 0; i < 26; i++) {
+    for (i = 0; i < 26; i++) {
         letters[i] = String.fromCharCode(i + 65);
     }
 
     // Fake standard counts
     var standard_counts = [];
-    for (var i = 0; i < 26; i++) {
+    for (i = 0; i < 26; i++) {
         standard_counts[i] = Math.round(total_letters * standard_letter_distribution[i] / 100);
     }
 
