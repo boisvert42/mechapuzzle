@@ -24,7 +24,7 @@ var ActiveXObject, parsedPuz, filecontents, PUZAPP = {};
     }
 
     // return new child element of specified type, appended to parent
-    function appendChild(parentElement, elementType) { 
+    function appendChild(parentElement, elementType) {
         return parentElement.appendChild(document.createElement(elementType));
     }
 
@@ -130,7 +130,7 @@ var ActiveXObject, parsedPuz, filecontents, PUZAPP = {};
         // return word associated with (x,y) based upon current direction, or 0 if N/A
         this.getWordNbr = function (x, y) {
             var direction = this.direction,
-            index = this.toIndex(x, y);
+                index = this.toIndex(x, y);
             if (direction === this.DIRECTION_UNKNOWN) {
                 return 0;
             }
@@ -173,50 +173,49 @@ var ActiveXObject, parsedPuz, filecontents, PUZAPP = {};
 
     function parsePuz(bytes) {
         //TODO check checksums
-		var sanity_check = bytes.match('ACROSS&DOWN');
-		if (!sanity_check)
-		{
-			alert('Not a .puz file!');
-			throw {
+        var sanity_check = bytes.match('ACROSS&DOWN');
+        if (!sanity_check) {
+            alert('Not a .puz file!');
+            throw {
                 name: "BADMAGICNUMBER",
                 message: "File did not contain expected magic number, contained '" + filemagic + "'."
             };
-		}
+        }
         var retval = new Puz(),
-        filemagic = bytes.substring(2, 14),
+            filemagic = bytes.substring(2, 14),
             //filechecksum = getShort(bytes, 0),
             c_cib = cksum_region(bytes, 44, 8, 0),
             w = getByte(bytes, 44),
-                h = getByte(bytes, 45),
-                wh = w * h,
-				grid_offset = 52 + wh,
-				strings_offset = grid_offset + wh,
-				cksum = cksum_region(bytes, 52, wh, c_cib),
-				nbrClues = getShort(bytes, 46),
-				extra_offset = findOffsetOfNth(bytes, strings_offset, '\u0000', nbrClues + 4),
-				offset = extra_offset,
-				sqNbr = 1,
-				sqNbrString,
-				clueNum = 0,
-				index = 0,
-				acrossClues = [],
-				downClues = [],
-				sqNbrs = [],
-				downWordNbrs = [],
-				acrossWordNbrs = [],
-				acrossSqNbrs = [],
-				downSqNbrs = [],
-				sectName,
-				len,
-				chksum,
-				compChksum,
-				x,
-				y,
-				saw,
-				sdw,
-				isBlack;
+            h = getByte(bytes, 45),
+            wh = w * h,
+            grid_offset = 52 + wh,
+            strings_offset = grid_offset + wh,
+            cksum = cksum_region(bytes, 52, wh, c_cib),
+            nbrClues = getShort(bytes, 46),
+            extra_offset = findOffsetOfNth(bytes, strings_offset, '\u0000', nbrClues + 4),
+            offset = extra_offset,
+            sqNbr = 1,
+            sqNbrString,
+            clueNum = 0,
+            index = 0,
+            acrossClues = [],
+            downClues = [],
+            sqNbrs = [],
+            downWordNbrs = [],
+            acrossWordNbrs = [],
+            acrossSqNbrs = [],
+            downSqNbrs = [],
+            sectName,
+            len,
+            chksum,
+            compChksum,
+            x,
+            y,
+            saw,
+            sdw,
+            isBlack;
         if (filemagic !== "ACROSS&DOWN\u0000") {
-			alert('Not a .puz file!');
+            alert('Not a .puz file!');
             throw {
                 name: "BADMAGICNUMBER",
                 message: "File did not contain expected magic number, contained '" + filemagic + "'."
@@ -230,10 +229,9 @@ var ActiveXObject, parsedPuz, filecontents, PUZAPP = {};
         retval.strings = bytes.substring(strings_offset).split('\u0000', nbrClues + 4);
         retval.grid = bytes.substring(grid_offset, grid_offset + wh);
         // Replace "solution" with "grid" if the puzzle is filled
-        if (retval.grid.indexOf('-') == -1)
-		{
-			retval.solution = retval.grid;
-		}
+        if (retval.grid.indexOf('-') == -1) {
+            retval.solution = retval.grid;
+        }
         cksum = cksum_region(bytes, grid_offset, wh, cksum);
         var acrossWords = {}, downWords = {};
         for (y = 0; y < h; y++) {
@@ -289,67 +287,64 @@ var ActiveXObject, parsedPuz, filecontents, PUZAPP = {};
         retval.title = retval.strings[0];
         retval.author = retval.strings[1];
         retval.copyright = retval.strings[2];
-        var all_clues = retval.strings.slice(3,3+retval.nbrClues);
-        var across_entries = {}; var down_entries = {};
-        var across_clues = {}; var down_clues = {};
+        var all_clues = retval.strings.slice(3, 3 + retval.nbrClues);
+        var across_entries = {};
+        var down_entries = {};
+        var across_clues = {};
+        var down_clues = {};
         var clues_remaining = retval.nbrClues;
-        var across_clue_number = 0; var down_clue_number = 0;
+        var across_clue_number = 0;
+        var down_clue_number = 0;
         for (y = 0; y < h; y++) {
             for (x = 0; x < w; x++, index++) {
                 sdw = retval.startDownWord(x, y);
                 saw = retval.startAcrossWord(x, y);
                 isBlack = retval.isBlack(x, y);
-                var this_index = retval.toIndex(x,y);
-                if (saw)
-                {
+                var this_index = retval.toIndex(x, y);
+                if (saw) {
                     // Start of an across entry
                     // Grab the number
                     across_clue_number = acrossWordNbrs[this_index];
                     // Add the clue
                     across_clues[across_clue_number] = all_clues[0];
                     clues_remaining--;
-                    all_clues = all_clues.slice(1,1+clues_remaining);
+                    all_clues = all_clues.slice(1, 1 + clues_remaining);
                     // Start the entry
                     across_entries[across_clue_number] = retval.solution[this_index];
                 }
-                else if (!isBlack)
-                {
+                else if (!isBlack) {
                     across_entries[across_clue_number] += retval.solution[this_index];
                 }
-                if (sdw)
-                {
+                if (sdw) {
                     // Start of a down entry
                     // Grab the number
                     down_clue_number = downWordNbrs[this_index];
                     // Add the clue
                     down_clues[down_clue_number] = all_clues[0];
                     clues_remaining--;
-                    all_clues = all_clues.slice(1,1+clues_remaining);
+                    all_clues = all_clues.slice(1, 1 + clues_remaining);
                 }
             }
         }
         // Check for a notepad
-        var additional_clues = retval.strings.slice(3+retval.nbrClues,4+retval.nbrClues);
+        var additional_clues = retval.strings.slice(3 + retval.nbrClues, 4 + retval.nbrClues);
         retval.notes = '';
-        if (additional_clues[0])
-        {
+        if (additional_clues[0]) {
             retval.notes = additional_clues[0];
-        }   
+        }
         retval.circles = [];
         // Down entries.  Also circles
         for (x = 0; x < w; x++) {
             for (y = 0; y < h; y++) {
                 sdw = retval.startDownWord(x, y);
                 isBlack = retval.isBlack(x, y);
-                var this_index = retval.toIndex(x,y);
-                if (sdw)
-                {
+                var this_index = retval.toIndex(x, y);
+                if (sdw) {
                     down_clue_number = downWordNbrs[this_index];
                     // Start the entry
                     down_entries[down_clue_number] = retval.solution[this_index];
                 }
-                else if (!isBlack)
-                {
+                else if (!isBlack) {
                     down_entries[down_clue_number] += retval.solution[this_index];
                 }
                 retval.circles[this_index] = retval.circled(this_index);
@@ -359,24 +354,22 @@ var ActiveXObject, parsedPuz, filecontents, PUZAPP = {};
         retval.across_clues = across_clues;
         retval.down_clues = down_clues;
         retval.down_entries = down_entries;
-		
-		PUZAPP.puzdata = retval;
-        
+
+        PUZAPP.puzdata = retval;
+
         return retval;
     }
 
-    function is_in_array(arr,obj)
-    {
+    function is_in_array(arr, obj) {
         return (arr.indexOf(obj) != -1);
     }
-	
-	function puzdata(filecontents)
-	{
-		var parsedPuz = parsePuz(filecontents);
-		// Add in any additional data we may want
-		return parsedPuz;
-	}
-    
+
+    function puzdata(filecontents) {
+        var parsedPuz = parsePuz(filecontents);
+        // Add in any additional data we may want
+        return parsedPuz;
+    }
+
     PUZAPP.parsepuz = parsePuz;
 
 }());
