@@ -63,31 +63,38 @@ function get_ul_of_long_entries_and_their_common_substrings(puzdata, min_theme_l
     var retval = document.createElement('ul');
 
     add_heading_and_sublist(retval, '(across entries of length > ' + min_theme_len + ')',
-        get_ul_of_one_directions_long_entries_and_their_common_substrings(puzdata.across_entries, min_theme_len));
+        get_ul_of_one_directions_long_entries_and_their_common_substrings(puzdata.across_entries, puzdata.across_clues, min_theme_len));
 
     add_heading_and_sublist(retval, '(down entries of length > ' + min_theme_len + ')',
-        get_ul_of_one_directions_long_entries_and_their_common_substrings(puzdata.down_entries, min_theme_len));
+        get_ul_of_one_directions_long_entries_and_their_common_substrings(puzdata.down_entries, puzdata.down_clues, min_theme_len));
 
     return retval;
 }
 
-function get_ul_of_one_directions_long_entries_and_their_common_substrings(entries, min_theme_len) {
+function get_ul_of_one_directions_long_entries_and_their_common_substrings(entries, clues, min_theme_len) {
     var retval = document.createElement('ul');
 
-    var potential_theme_entries = getStringsOfAtLeastMinLength(entries, min_theme_len);
-    if (potential_theme_entries.length == 0) {
+    var indices_of_potential_theme_entries = getIndicesOfStringsOfAtLeastMinLength(entries, min_theme_len);
+    if (indices_of_potential_theme_entries.length == 0) {
         var item = document.createElement('li');
         item.appendChild(document.createTextNode('<none>'));
         retval.appendChild(item);
     } else {
+        var potential_theme_entries = [];
+        for (var i = 0; i < indices_of_potential_theme_entries.length; ++i) {
+            potential_theme_entries.push(entries[indices_of_potential_theme_entries[i]]);
+        }
         var longest_common_substrings = longestCommonSubstringsFromMultipleStrings.apply(null, potential_theme_entries);
         for (var i_substr = 0; i_substr < longest_common_substrings.length; ++i_substr) {
             var longest_common_substring = longest_common_substrings[i_substr];
 
             var list_for_particular_substring = document.createElement('ul');
-            for (var i = 0; i < potential_theme_entries.length; ++i) {
+            for (var i = 0; i < indices_of_potential_theme_entries.length; ++i) {
                 var highlighted_substring_item = document.createElement('li');
-                add_highlighted_substring(highlighted_substring_item, potential_theme_entries[i], longest_common_substring);
+                add_highlighted_substring(highlighted_substring_item,
+                    entries[indices_of_potential_theme_entries[i]],
+                    longest_common_substring);
+                highlighted_substring_item.appendChild(document.createTextNode(" [" + clues[indices_of_potential_theme_entries[i]] + "]"));
                 list_for_particular_substring.appendChild(highlighted_substring_item);
             }
 
@@ -110,14 +117,15 @@ function add_highlighted_substring(item, string, substring) {
     item.appendChild(document.createTextNode(string.substring(substring_start_index + substring.length, string.length)));
 }
 
-// returns all strings from {strings} of length at least {min_len}
-function getStringsOfAtLeastMinLength(strings, min_len) {
+// returns indices of all strings from {strings} of length at least {min_len}
+// (e.g., if strings 0, 2, and 5 (and none others) are of length at least {min_len}, the return value is [0, 2, 5]
+function getIndicesOfStringsOfAtLeastMinLength(strings, min_len) {
     var retval = [];
 
     for (var i in strings) {
         var entry = strings[i];
         if (entry.length >= min_len) {
-            retval.push(entry);
+            retval.push(i);
         }
     }
 
