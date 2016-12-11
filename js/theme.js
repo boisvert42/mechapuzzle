@@ -4,80 +4,131 @@ function render_theme() {
     display_grid(render_to_theme);
 
     var min_theme_len = 9; // TODO?: allow user to pick?
-    var list_of_lists_of_potential_theme_entries = document.createElement('ul');
+    var list_of_lists_of_potential_theme_entries = document.createElement('div');
 
-    add_heading_and_sublist(list_of_lists_of_potential_theme_entries, 'STARRED CLUES',
-        get_ul_of_starred_clues(PUZAPP.puzdata));
-    add_heading_and_sublist(list_of_lists_of_potential_theme_entries, 'LONG ENTRIES',
-        get_ul_of_long_entries_and_their_common_substrings(PUZAPP.puzdata, min_theme_len));
+    add_named_section(list_of_lists_of_potential_theme_entries, 'STARRED CLUES',
+        display_starred_clues(PUZAPP.puzdata));
+    add_named_section(list_of_lists_of_potential_theme_entries, 'LONG ENTRIES',
+        display_long_entries_and_common_substrings(PUZAPP.puzdata, min_theme_len));
 
     document.getElementById(render_to_theme).appendChild(list_of_lists_of_potential_theme_entries);
 }
 
 
-function add_heading_and_sublist(list_of_lists, heading, list_to_be_added) {
-    var heading_item = document.createElement('li');
+function add_named_section(all_items, heading, addedElements) {
+    var heading_item = document.createElement('div');
     heading_item.appendChild(document.createTextNode(heading));
-    heading_item.appendChild(list_to_be_added);
-
-    list_of_lists.appendChild(heading_item);
+    all_items.appendChild(heading_item);
+    all_items.appendChild(addedElements);
 }
 
-function get_ul_of_starred_clues(puzdata) {
-    var retval = document.createElement('ul');
+function display_starred_clues(puzdata) {
+    var retval = document.createElement('div');
+    retval.className = 'items';
 
     var starred_across = getCluesPreOrPostfixedWith(puzdata.across_clues, '*', puzdata.across_entries, 'A');
     var starred_down = getCluesPreOrPostfixedWith(puzdata.down_clues, '*', puzdata.down_entries, 'D');
-    var starred_clues = starred_across.concat(starred_down);
+
+    var starred_clues = starred_across.clues.concat(starred_down.clues);
 
     if (starred_clues.length == 0) {
-        var item = document.createElement('li');
-        item.appendChild(document.createTextNode('<none>'));
-        retval.appendChild(item);
+        var empty_item = document.createElement('div');
+        var newChild = document.createTextNode('<none>');
+        empty_item.appendChild(newChild);
+        retval.appendChild(empty_item);
     } else {
-        for (var i = 0; i < starred_clues.length; ++i) {
-            item = document.createElement('li');
-            item.appendChild(document.createTextNode(starred_clues[i]));
-            retval.appendChild(item);
+        // for some reason, according to comments found on stackoverflow,
+        // when doing this sort of thing, the right-hand item
+        // needs to come first. Seems to work
+
+        // RIGHT-HAND ITEMS
+        var right_items = document.createElement('div');
+        right_items.className = 'item-right';
+        var thisItem;
+
+        for (var i = 0; i < starred_across.entries.length; ++i) {
+             thisItem = document.createElement('div');
+            if (i % 2 === 0) {
+                thisItem.className = 'hilight';
+            }
+            thisItem.appendChild(document.createTextNode(starred_across.entries[i]));
+            right_items.appendChild(thisItem);
         }
+        for (var i = 0; i < starred_down.entries.length; ++i) {
+            thisItem = document.createElement('div');
+            if (i % 2 === 0) {
+                thisItem.className = 'hilight';
+            }
+            thisItem.appendChild(document.createTextNode(starred_down.entries[i]));
+            right_items.appendChild(thisItem);
+        }
+        retval.appendChild(right_items);
+
+        // LEFT-HAND ITEMS
+        var left_items = document.createElement('div');
+        left_items.className = 'item-left';
+        for (var i = 0; i < starred_across.clues.length; ++i) {
+            thisItem = document.createElement('div');
+            if (i % 2 === 0) {
+                thisItem.className = 'hilight';
+            }
+            thisItem.appendChild(document.createTextNode(starred_across.clues[i]));
+            left_items.appendChild(thisItem);
+        }
+        for (var i = 0; i < starred_down.clues.length; ++i) {
+            thisItem = document.createElement('div');
+            if (i % 2 === 0) {
+                thisItem.className = 'hilight';
+            }
+            thisItem.appendChild(document.createTextNode(starred_down.clues[i]));
+            left_items.appendChild(thisItem);
+        }
+        retval.appendChild(left_items);
     }
 
     return retval;
 }
 
 function getCluesPreOrPostfixedWith(clues, token, entries, type) {
-    var retval = [];
+    var retClues = [];
+    var retEntries = [];
 
     for (var i in clues) {
         if (clues[i].startsWith(token) || clues[i].endsWith(token)) {
             // console.log(i + type + " " + clues[i]);
-            retval.push(i + type + ' [' + clues[i] + '] ' + entries[i]);
+            retClues.push(i + type + ' [' + clues[i] + ']');
+            retEntries.push(entries[i]);
         }
     }
 
-    return retval;
+    return {
+        clues: retClues,
+        entries: retEntries
+    };
 }
 
 
-function get_ul_of_long_entries_and_their_common_substrings(puzdata, min_theme_len) {
-    var retval = document.createElement('ul');
+function display_long_entries_and_common_substrings(puzdata, min_theme_len) {
+    var retval = document.createElement('div');
+    retval.className = 'items';
 
-    add_heading_and_sublist(retval, '(across entries of length > ' + min_theme_len + ')',
-        get_ul_of_one_directions_long_entries_and_their_common_substrings(puzdata.across_entries, puzdata.across_clues, min_theme_len));
+    add_named_section(retval, '(across entries of length > ' + min_theme_len + ')',
+        display_one_directions_long_entries_and_their_common_substrings(puzdata.across_entries, puzdata.across_clues, min_theme_len));
 
-    add_heading_and_sublist(retval, '(down entries of length > ' + min_theme_len + ')',
-        get_ul_of_one_directions_long_entries_and_their_common_substrings(puzdata.down_entries, puzdata.down_clues, min_theme_len));
+    add_named_section(retval, '(down entries of length > ' + min_theme_len + ')',
+        display_one_directions_long_entries_and_their_common_substrings(puzdata.down_entries, puzdata.down_clues, min_theme_len));
 
     return retval;
 }
 
-function get_ul_of_one_directions_long_entries_and_their_common_substrings(entries, clues, min_theme_len) {
-    var retval = document.createElement('ul');
+function display_one_directions_long_entries_and_their_common_substrings(entries, clues, min_theme_len) {
+    var retval = document.createElement('div');
 
     var indices_of_potential_theme_entries = getIndicesOfStringsOfAtLeastMinLength(entries, min_theme_len);
     if (indices_of_potential_theme_entries.length == 0) {
-        var item = document.createElement('li');
-        item.appendChild(document.createTextNode('<none>'));
+        var item = document.createElement('div');
+        var newChild = document.createTextNode('<none>');
+        item.appendChild(newChild);
         retval.appendChild(item);
     } else {
         var potential_theme_entries = [];
@@ -85,21 +136,40 @@ function get_ul_of_one_directions_long_entries_and_their_common_substrings(entri
             potential_theme_entries.push(entries[indices_of_potential_theme_entries[i]]);
         }
         var longest_common_substrings = longestCommonSubstringsFromMultipleStrings.apply(null, potential_theme_entries);
-        for (var i_substr = 0; i_substr < longest_common_substrings.length; ++i_substr) {
-            var longest_common_substring = longest_common_substrings[i_substr];
 
-            var list_for_particular_substring = document.createElement('ul');
+        for (var i_substr = 0; i_substr < longest_common_substrings.length; ++i_substr) {
+            var some_items = document.createElement('div');
+            var left_items = document.createElement('div');
+            left_items.className = 'item-left';
+            var right_items = document.createElement('div');
+            right_items.className = 'item-right';
+
+            var longest_common_substring = longest_common_substrings[i_substr];
+            var rightItem;
+            var leftItem;
             for (var i = 0; i < indices_of_potential_theme_entries.length; ++i) {
-                var highlighted_substring_item = document.createElement('li');
+                var highlighted_substring_item = document.createElement('span');
                 add_highlighted_substring(highlighted_substring_item,
                     entries[indices_of_potential_theme_entries[i]],
                     longest_common_substring);
-                highlighted_substring_item.appendChild(document.createTextNode(" [" + clues[indices_of_potential_theme_entries[i]] + "]"));
-                list_for_particular_substring.appendChild(highlighted_substring_item);
+                rightItem = document.createElement('div');
+                leftItem = document.createElement('div');
+                if (i % 2 === 0) {
+                    rightItem.className = 'hilight';
+                    leftItem.className = 'hilight';
+                }
+                rightItem.appendChild(document.createTextNode("[" + clues[indices_of_potential_theme_entries[i]] + "]"));
+                right_items.appendChild(rightItem);
+                leftItem.appendChild(highlighted_substring_item);
+                left_items.appendChild(leftItem);
             }
 
             var heading = '\nlongest common substring: ' + (longest_common_substring.length > 0 ? longest_common_substring : '<none>');
-            add_heading_and_sublist(retval, heading, list_for_particular_substring);
+
+            // right before left, again.
+            some_items.appendChild(right_items);
+            some_items.appendChild(left_items);
+            add_named_section(retval, heading, some_items);
         }
     }
 
