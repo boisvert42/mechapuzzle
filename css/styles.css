@@ -108,3 +108,23 @@ table.grid div.number {
     padding-top: 0;
     margin: 0;
 }
+
+.items {
+    margin: 5px;
+}
+
+.item-left {
+    float: none;
+    width: auto;
+    overflow: scroll;
+}
+
+.item-right {
+    float: right;
+    width: 50%;
+    overflow: scroll;
+}
+
+.hilight {
+    background: #ffffcc;
+}
