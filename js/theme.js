@@ -3,101 +3,119 @@ var render_to_theme = 'theme_js';
 function render_theme() {
     display_grid(render_to_theme);
 
-    var min_theme_len = 9; // TODO?: allow user to pick?
-    var list_of_lists_of_potential_theme_entries = document.createElement('div');
+    let min_theme_len = 9; // TODO?: allow user to pick?
+    let list_of_lists_of_potential_theme_entries = document.createElement('div');
 
+    create_twisty(list_of_lists_of_potential_theme_entries, 'toggle-starred', 'starred');
     add_named_section(list_of_lists_of_potential_theme_entries, 'STARRED CLUES',
         display_starred_clues(PUZAPP.puzdata));
+
+    create_twisty(list_of_lists_of_potential_theme_entries, 'toggle-long', 'long');
     add_named_section(list_of_lists_of_potential_theme_entries, 'LONG ENTRIES',
         display_long_entries_and_common_substrings(PUZAPP.puzdata, min_theme_len));
 
     document.getElementById(render_to_theme).appendChild(list_of_lists_of_potential_theme_entries);
 }
 
+function create_twisty(parent, toggleName, toggledId) {
+    "use strict";
 
-function add_named_section(all_items, heading, addedElements) {
-    var heading_item = document.createElement('div');
+    let showHide = document.createElement('input');
+    showHide.type = 'checkbox';
+    showHide.id = toggleName;
+    showHide.style.display = 'none';
+    showHide.onclick = function () { toggle_display(toggledId) };
+
+    let toggled = document.createTextNode('▾');
+    let untoggled = document.createTextNode('▸');
+
+    let toggleLabel = document.createElement('label');
+    toggleLabel.id = 'shown';
+    toggleLabel.htmlFor = toggleName;
+    toggleLabel.style.float = 'left';
+    toggleLabel.style.marginRight = '5px';
+    toggleLabel.appendChild(toggled);
+    toggleLabel.onclick = function() { swap_label(toggleLabel, toggled, untoggled) };
+
+    parent.appendChild(showHide);
+    parent.appendChild(toggleLabel);
+}
+
+function swap_label(item, toggled, untoggled) {
+    "use strict";
+    let textNode = item.childNodes[0];
+    if (textNode == toggled) {
+        item.replaceChild(untoggled, item.childNodes[0]);
+    } else {
+        item.replaceChild(toggled, item.childNodes[0]);
+    }
+}
+
+function add_named_section(all_items, heading, addedElements, classToAdd) {
+    let heading_item = document.createElement('div');
+    if (!(typeof classToAdd === 'undefined') || !(classToAdd == null)) {
+        heading_item.className = classToAdd;
+    }
     heading_item.appendChild(document.createTextNode(heading));
     all_items.appendChild(heading_item);
     all_items.appendChild(addedElements);
 }
 
 function display_starred_clues(puzdata) {
-    var retval = document.createElement('div');
-    retval.className = 'items';
+    let retval = document.createElement('div');
+    retval.className = 'items indent-l1';
+    retval.id = 'starred';
 
-    var starred_across = getCluesPreOrPostfixedWith(puzdata.across_clues, '*', puzdata.across_entries, 'A');
-    var starred_down = getCluesPreOrPostfixedWith(puzdata.down_clues, '*', puzdata.down_entries, 'D');
+    let starred_across = getCluesPreOrPostfixedWith(puzdata.across_clues, '*', puzdata.across_entries, 'A');
+    let starred_down = getCluesPreOrPostfixedWith(puzdata.down_clues, '*', puzdata.down_entries, 'D');
 
-    var starred_clues = starred_across.clues.concat(starred_down.clues);
+    let starred_clues = starred_across.clues.concat(starred_down.clues);
 
     if (starred_clues.length == 0) {
-        var empty_item = document.createElement('div');
-        var newChild = document.createTextNode('<none>');
+        let empty_item = document.createElement('div');
+        let newChild = document.createTextNode('<none>');
         empty_item.appendChild(newChild);
         retval.appendChild(empty_item);
     } else {
-        // for some reason, according to comments found on stackoverflow,
-        // when doing this sort of thing, the right-hand item
-        // needs to come first. Seems to work
-
-        // RIGHT-HAND ITEMS
-        var right_items = document.createElement('div');
-        right_items.className = 'item-right';
-        var thisItem;
-
-        for (var i = 0; i < starred_across.entries.length; ++i) {
-             thisItem = document.createElement('div');
-            if (i % 2 === 0) {
-                thisItem.className = 'hilight';
-            }
-            thisItem.appendChild(document.createTextNode(starred_across.entries[i]));
-            right_items.appendChild(thisItem);
-        }
-        for (var i = 0; i < starred_down.entries.length; ++i) {
-            thisItem = document.createElement('div');
-            if (i % 2 === 0) {
-                thisItem.className = 'hilight';
-            }
-            thisItem.appendChild(document.createTextNode(starred_down.entries[i]));
-            right_items.appendChild(thisItem);
-        }
+        let right_items = document.createElement('div');
+        right_items.className = 'item-right indent-l2';
+        add_items(right_items, 'indent-l2', starred_across.entries);
+        add_items(right_items, 'indent-l2', starred_down.entries);
         retval.appendChild(right_items);
 
         // LEFT-HAND ITEMS
-        var left_items = document.createElement('div');
-        left_items.className = 'item-left';
-        for (var i = 0; i < starred_across.clues.length; ++i) {
-            thisItem = document.createElement('div');
-            if (i % 2 === 0) {
-                thisItem.className = 'hilight';
-            }
-            thisItem.appendChild(document.createTextNode(starred_across.clues[i]));
-            left_items.appendChild(thisItem);
-        }
-        for (var i = 0; i < starred_down.clues.length; ++i) {
-            thisItem = document.createElement('div');
-            if (i % 2 === 0) {
-                thisItem.className = 'hilight';
-            }
-            thisItem.appendChild(document.createTextNode(starred_down.clues[i]));
-            left_items.appendChild(thisItem);
-        }
+        let left_items = document.createElement('div');
+        left_items.className = 'item-left indent-l2';
+        add_items(left_items, 'indent-l2', starred_across.clues);
+        add_items(left_items, 'indent-l2', starred_down.clues);
         retval.appendChild(left_items);
     }
-
     return retval;
 }
 
-function getCluesPreOrPostfixedWith(clues, token, entries, type) {
-    var retClues = [];
-    var retEntries = [];
+function add_items(elem, class_type, itemArray) {
+    "use strict";
+    for(let i = 0; i < itemArray.length; ++i) {
+        let this_item = document.createElement('div');
+        if (i % 2 === 0) {
+            this_item.className = 'hilight ' + class_type;
+        }
+        this_item.appendChild(document.createTextNode(itemArray[i]));
+        elem.appendChild(this_item);
+    }
+}
 
-    for (var i in clues) {
-        if (clues[i].startsWith(token) || clues[i].endsWith(token)) {
-            // console.log(i + type + " " + clues[i]);
-            retClues.push(i + type + ' [' + clues[i] + ']');
-            retEntries.push(entries[i]);
+function getCluesPreOrPostfixedWith(clues, token, entries, type) {
+    let retClues = [];
+    let retEntries = [];
+
+    for (let i in clues) {
+        if (clues.hasOwnProperty(i)) {
+            if (clues[i].startsWith(token) || clues[i].endsWith(token)) {
+                // console.log(i + type + " " + clues[i]);
+                retClues.push(i + type + ' [' + clues[i] + ']');
+                retEntries.push(entries[i]);
+            }
         }
     }
 
@@ -109,54 +127,59 @@ function getCluesPreOrPostfixedWith(clues, token, entries, type) {
 
 
 function display_long_entries_and_common_substrings(puzdata, min_theme_len) {
-    var retval = document.createElement('div');
-    retval.className = 'items';
+    let retval = document.createElement('div');
+    retval.className = 'items indent-l1';
+    retval.id = 'long';
 
     add_named_section(retval, '(across entries of length > ' + min_theme_len + ')',
-        display_one_directions_long_entries_and_their_common_substrings(puzdata.across_entries, puzdata.across_clues, min_theme_len));
+        display_one_directions_long_entries_and_their_common_substrings(puzdata.across_entries, puzdata.across_clues, min_theme_len),
+        'indent-l2');
 
     add_named_section(retval, '(down entries of length > ' + min_theme_len + ')',
-        display_one_directions_long_entries_and_their_common_substrings(puzdata.down_entries, puzdata.down_clues, min_theme_len));
+        display_one_directions_long_entries_and_their_common_substrings(puzdata.down_entries, puzdata.down_clues, min_theme_len),
+        'indent-l2');
 
     return retval;
 }
 
 function display_one_directions_long_entries_and_their_common_substrings(entries, clues, min_theme_len) {
-    var retval = document.createElement('div');
+    let retval = document.createElement('div');
+    retval.className = 'indent-l3';
 
-    var indices_of_potential_theme_entries = getIndicesOfStringsOfAtLeastMinLength(entries, min_theme_len);
+    let indices_of_potential_theme_entries = getIndicesOfStringsOfAtLeastMinLength(entries, min_theme_len);
     if (indices_of_potential_theme_entries.length == 0) {
-        var item = document.createElement('div');
-        var newChild = document.createTextNode('<none>');
+        let item = document.createElement('div');
+        item.className = 'indent-l4';
+        let newChild = document.createTextNode('<none>');
         item.appendChild(newChild);
         retval.appendChild(item);
     } else {
-        var potential_theme_entries = [];
-        for (var i = 0; i < indices_of_potential_theme_entries.length; ++i) {
+        let potential_theme_entries = [];
+        for (let i = 0; i < indices_of_potential_theme_entries.length; ++i) {
             potential_theme_entries.push(entries[indices_of_potential_theme_entries[i]]);
         }
-        var longest_common_substrings = longestCommonSubstringsFromMultipleStrings.apply(null, potential_theme_entries);
+        let longest_common_substrings = longestCommonSubstringsFromMultipleStrings.apply(null, potential_theme_entries);
 
-        for (var i_substr = 0; i_substr < longest_common_substrings.length; ++i_substr) {
-            var some_items = document.createElement('div');
-            var left_items = document.createElement('div');
-            left_items.className = 'item-left';
-            var right_items = document.createElement('div');
-            right_items.className = 'item-right';
+        for (let i_substr = 0; i_substr < longest_common_substrings.length; ++i_substr) {
+            let some_items = document.createElement('div');
+            let left_items = document.createElement('div');
+            left_items.className = 'item-left indent-l5';
+            let right_items = document.createElement('div');
+            right_items.className = 'item-right indent-l5';
 
-            var longest_common_substring = longest_common_substrings[i_substr];
-            var rightItem;
-            var leftItem;
-            for (var i = 0; i < indices_of_potential_theme_entries.length; ++i) {
-                var highlighted_substring_item = document.createElement('span');
+            let longest_common_substring = longest_common_substrings[i_substr];
+            let rightItem;
+            let leftItem;
+            for (let i = 0; i < indices_of_potential_theme_entries.length; ++i) {
+                let highlighted_substring_item = document.createElement('span');
                 add_highlighted_substring(highlighted_substring_item,
                     entries[indices_of_potential_theme_entries[i]],
                     longest_common_substring);
                 rightItem = document.createElement('div');
                 leftItem = document.createElement('div');
                 if (i % 2 === 0) {
-                    rightItem.className = 'hilight';
-                    leftItem.className = 'hilight';
+                    rightItem.className = 'hilight indent-l5';
+                    leftItem.className = 'hilight indent-l5';
                 }
                 rightItem.appendChild(document.createTextNode("[" + clues[indices_of_potential_theme_entries[i]] + "]"));
                 right_items.appendChild(rightItem);
@@ -164,7 +187,7 @@ function display_one_directions_long_entries_and_their_common_substrings(entries
                 left_items.appendChild(leftItem);
             }
 
-            var heading = '\nlongest common substring: ' + (longest_common_substring.length > 0 ? longest_common_substring : '<none>');
+            let heading = '\nlongest common substring: ' + (longest_common_substring.length > 0 ? longest_common_substring : '<none>');
 
             // right before left, again.
             some_items.appendChild(right_items);
@@ -179,9 +202,9 @@ function display_one_directions_long_entries_and_their_common_substrings(entries
 // add a version of {string} with {substring} marked (by <mark></mark> tag) to item
 // TODO: only highlights first instance of substring (per string)--do something else?
 function add_highlighted_substring(item, string, substring) {
-    var substring_start_index = string.indexOf(substring);
+    let substring_start_index = string.indexOf(substring);
     item.appendChild(document.createTextNode(string.substring(0, substring_start_index)));
-    var marked_part = document.createElement('mark');
+    let marked_part = document.createElement('mark');
     marked_part.appendChild(document.createTextNode(substring));
     item.appendChild(marked_part);
     item.appendChild(document.createTextNode(string.substring(substring_start_index + substring.length, string.length)));
@@ -190,12 +213,14 @@ function add_highlighted_substring(item, string, substring) {
 // returns indices of all strings from {strings} of length at least {min_len}
 // (e.g., if strings 0, 2, and 5 (and none others) are of length at least {min_len}, the return value is [0, 2, 5]
 function getIndicesOfStringsOfAtLeastMinLength(strings, min_len) {
-    var retval = [];
+    let retval = [];
 
-    for (var i in strings) {
-        var entry = strings[i];
-        if (entry.length >= min_len) {
-            retval.push(i);
+    for (let i in strings) {
+        if (strings.hasOwnProperty(i)) {
+            let entry = strings[i];
+            if (entry.length >= min_len) {
+                retval.push(i);
+            }
         }
     }
 
@@ -208,34 +233,32 @@ function longestCommonSubstringsFromMultipleStrings() {
         return ''; // TODO: do something else (e.g., throw an exception)?
     }
 
-    var substringToSourcesMap = {};
-    for (var iArg = 0; iArg < arguments.length; ++iArg) {
-        var s = arguments[iArg];
-        for (var i = 0; i < s.length; ++i) {
-            for (var j = i; j <= s.length; ++j) {
-                var substring = s.slice(i, j);
+    let substringToSourcesMap = {};
+    for (let iArg = 0; iArg < arguments.length; ++iArg) {
+        let s = arguments[iArg];
+        for (let i = 0; i < s.length; ++i) {
+            for (let j = i; j <= s.length; ++j) {
+                let substring = s.slice(i, j);
                 addKeyValuePairToMultimap(substringToSourcesMap, substring, s);
             }
         }
     }
 
-    var retval = [];
-    var maxCommonSubstringLen = -1;
-    for (var substring in substringToSourcesMap) {
-//        if (!substringToSourcesMap.hasOwnProperty(substring)) { // TODO: is this needed? is this also needed for other for-in constructs?
-//            continue;
-//        }
-
-        if (substring.length < maxCommonSubstringLen) {
-            continue;
-        }
-        if (substringToSourcesMap[substring].length == arguments.length) {
-            if (substring.length > maxCommonSubstringLen) {
-                maxCommonSubstringLen = substring.length;
-                retval = [];
+    let retval = [];
+    let maxCommonSubstringLen = -1;
+    for (let substring in substringToSourcesMap) {
+        if (substringToSourcesMap.hasOwnProperty(substring)) {
+            if (substring.length < maxCommonSubstringLen) {
+                continue;
             }
+            if (substringToSourcesMap[substring].length == arguments.length) {
+                if (substring.length > maxCommonSubstringLen) {
+                    maxCommonSubstringLen = substring.length;
+                    retval = [];
+                }
 
-            retval.push(substring); // when here, substring.length >= (immediately previous value of) maxCommonSubstringLen
+                retval.push(substring); // when here, substring.length >= (immediately previous value of) maxCommonSubstringLen
+            }
         }
     }
 
@@ -250,5 +273,18 @@ function addKeyValuePairToMultimap(multimap, key, value) {
 
     if (multimap[key].indexOf(value) == -1) { // TODO: better way to do this?
         multimap[key].push(value);
+    }
+}
+
+
+// given an element id, toggle its visibility
+function toggle_display(id) {
+    let element = document.getElementById(id);
+    if (!(typeof element === 'undefined') || !(element == null)) {
+        if (element.style.display === 'none') {
+            element.style.display = 'block';
+        } else {
+            element.style.display = 'none';
+        }
     }
 }

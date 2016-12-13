@@ -126,5 +126,29 @@ table.grid div.number {
 }
 
 .hilight {
-    background: #ffffcc;
+    background: #cccccc;
+}
+
+.indent-l1 {
+    text-indent: 15px;
+}
+
+.indent-l2 {
+    text-indent: 30px;
+}
+
+.indent-l3 {
+    text-indent: 45px;
+}
+
+.indent-l4 {
+    text-indent: 60px;
+}
+
+.indent-l5 {
+    text-indent: 75px;
+}
+
+mark {
+    background: #33cc99;
 }
