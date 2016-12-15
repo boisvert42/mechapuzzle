@@ -110,43 +110,23 @@ table.grid div.number {
 }
 
 .items {
-    margin: 5px;
+    display: table;
+    table-layout: fixed;
 }
 
-.item-left {
-    float: none;
-    width: auto;
-    overflow: scroll;
+.items span {
+    display: table-cell;
+    text-align: left;
+    border: 0;
 }
 
-.item-right {
-    float: right;
-    width: 50%;
-    overflow: scroll;
-}
 
 .hilight {
     background: #cccccc;
 }
 
-.indent-l1 {
-    text-indent: 15px;
-}
-
-.indent-l2 {
-    text-indent: 30px;
-}
-
-.indent-l3 {
-    text-indent: 45px;
-}
-
-.indent-l4 {
-    text-indent: 60px;
-}
-
-.indent-l5 {
-    text-indent: 75px;
+.indent {
+    margin-left: 15px;
 }
 
 mark {

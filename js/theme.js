@@ -6,8 +6,12 @@ function render_theme() {
     let min_theme_len = 9; // TODO?: allow user to pick?
     let list_of_lists_of_potential_theme_entries = document.createElement('div');
 
+    let buttonLabels = ['Clues', 'Entries'];
+    let buttonActions = [function() { toggleByClass('entry') }, function() { toggleByClass('clue') }];
+    add_buttons(list_of_lists_of_potential_theme_entries, buttonLabels, buttonActions);
+
     create_twisty(list_of_lists_of_potential_theme_entries, 'toggle-starred', 'starred');
-    add_named_section(list_of_lists_of_potential_theme_entries, 'STARRED CLUES',
+    add_named_section(list_of_lists_of_potential_theme_entries, 'STARRED CLUES & ENTRIES',
         display_starred_clues(PUZAPP.puzdata));
 
     create_twisty(list_of_lists_of_potential_theme_entries, 'toggle-long', 'long');
@@ -17,6 +21,22 @@ function render_theme() {
     document.getElementById(render_to_theme).appendChild(list_of_lists_of_potential_theme_entries);
 }
 
+// append a <div> containing n <button> elements defined by an n-sized array of labels
+// and an n-sized array of onClick() functions that are invoked when clicking said buttons
+function add_buttons(parent, labelsArr, onClickArr) {
+    "use strict";
+    let buttons = document.createElement('div');
+    for (let i = 0; i < labelsArr.length; ++i) {
+        let b = document.createElement('button');
+        b.appendChild(document.createTextNode(labelsArr[i]));
+        b.onclick = function() { onClickArr[i]() };
+        buttons.appendChild(b);
+    }
+    parent.appendChild(buttons);
+}
+
+// prepend to a given parent a clickable '▸' character to toggle display
+// assigns the id 'toggleName' to the
 function create_twisty(parent, toggleName, toggledId) {
     "use strict";
 
@@ -24,7 +44,7 @@ function create_twisty(parent, toggleName, toggledId) {
     showHide.type = 'checkbox';
     showHide.id = toggleName;
     showHide.style.display = 'none';
-    showHide.onclick = function () { toggle_display(toggledId) };
+    showHide.onclick = function () { toggleById(toggledId) };
 
     let toggled = document.createTextNode('▾');
     let untoggled = document.createTextNode('▸');
@@ -51,10 +71,13 @@ function swap_label(item, toggled, untoggled) {
     }
 }
 
-function add_named_section(all_items, heading, addedElements, classToAdd) {
+function add_named_section(all_items, heading, addedElements, classToAdd, styleToApply) {
     let heading_item = document.createElement('div');
     if (!(typeof classToAdd === 'undefined') || !(classToAdd == null)) {
         heading_item.className = classToAdd;
+    }
+    if (!(typeof styleToApply === 'undefined') || !(styleToApply == null)) {
+        heading_item.style = styleToApply;
     }
     heading_item.appendChild(document.createTextNode(heading));
     all_items.appendChild(heading_item);
@@ -63,7 +86,7 @@ function add_named_section(all_items, heading, addedElements, classToAdd) {
 
 function display_starred_clues(puzdata) {
     let retval = document.createElement('div');
-    retval.className = 'items indent-l1';
+    retval.className = 'items indent';
     retval.id = 'starred';
 
     let starred_across = getCluesPreOrPostfixedWith(puzdata.across_clues, '*', puzdata.across_entries, 'A');
@@ -77,31 +100,35 @@ function display_starred_clues(puzdata) {
         empty_item.appendChild(newChild);
         retval.appendChild(empty_item);
     } else {
-        let right_items = document.createElement('div');
-        right_items.className = 'item-right indent-l2';
-        add_items(right_items, 'indent-l2', starred_across.entries);
-        add_items(right_items, 'indent-l2', starred_down.entries);
-        retval.appendChild(right_items);
+        let items = document.createElement('div');
+        items.className = 'indent';
+        add_items(items, starred_across.entries, starred_across.clues);
+        add_items(items, starred_down.entries, starred_down.clues);
 
-        // LEFT-HAND ITEMS
-        let left_items = document.createElement('div');
-        left_items.className = 'item-left indent-l2';
-        add_items(left_items, 'indent-l2', starred_across.clues);
-        add_items(left_items, 'indent-l2', starred_down.clues);
-        retval.appendChild(left_items);
+        retval.appendChild(items);
     }
     return retval;
 }
 
-function add_items(elem, class_type, itemArray) {
+function add_items(elem, entries, clues) {
     "use strict";
-    for(let i = 0; i < itemArray.length; ++i) {
-        let this_item = document.createElement('div');
+    for(let i = 0; i < entries.length; ++i) {
+        let clueDiv = document.createElement('div');
+        let entryDiv = document.createElement('div');
+        let clue = document.createElement('span');
+        let entry = document.createElement('span');
+        clueDiv.className = 'clue';
+        entryDiv.className = 'entry';
         if (i % 2 === 0) {
-            this_item.className = 'hilight ' + class_type;
+            clueDiv.className  += ' hilight';
+            entryDiv.className += ' hilight';
         }
-        this_item.appendChild(document.createTextNode(itemArray[i]));
-        elem.appendChild(this_item);
+        clue.appendChild(document.createTextNode(clues[i]));
+        entry.appendChild(document.createTextNode(entries[i]));
+        clueDiv.appendChild(clue);
+        entryDiv.appendChild(entry);
+        elem.appendChild(clueDiv);
+        elem.appendChild(entryDiv);
     }
 }
 
@@ -128,28 +155,28 @@ function getCluesPreOrPostfixedWith(clues, token, entries, type) {
 
 function display_long_entries_and_common_substrings(puzdata, min_theme_len) {
     let retval = document.createElement('div');
-    retval.className = 'items indent-l1';
+    retval.className = 'indent';
     retval.id = 'long';
 
     add_named_section(retval, '(across entries of length > ' + min_theme_len + ')',
         display_one_directions_long_entries_and_their_common_substrings(puzdata.across_entries, puzdata.across_clues, min_theme_len),
-        'indent-l2');
+        'indent', 'display: list-item;');
 
     add_named_section(retval, '(down entries of length > ' + min_theme_len + ')',
         display_one_directions_long_entries_and_their_common_substrings(puzdata.down_entries, puzdata.down_clues, min_theme_len),
-        'indent-l2');
+        'indent', 'display: list-item;');
 
     return retval;
 }
 
 function display_one_directions_long_entries_and_their_common_substrings(entries, clues, min_theme_len) {
     let retval = document.createElement('div');
-    retval.className = 'indent-l3';
+    retval.className = 'items indent';
 
     let indices_of_potential_theme_entries = getIndicesOfStringsOfAtLeastMinLength(entries, min_theme_len);
     if (indices_of_potential_theme_entries.length == 0) {
         let item = document.createElement('div');
-        item.className = 'indent-l4';
+        item.className = 'indent';
         let newChild = document.createTextNode('<none>');
         item.appendChild(newChild);
         retval.appendChild(item);
@@ -161,38 +188,33 @@ function display_one_directions_long_entries_and_their_common_substrings(entries
         let longest_common_substrings = longestCommonSubstringsFromMultipleStrings.apply(null, potential_theme_entries);
 
         for (let i_substr = 0; i_substr < longest_common_substrings.length; ++i_substr) {
-            let some_items = document.createElement('div');
-            let left_items = document.createElement('div');
-            left_items.className = 'item-left indent-l5';
-            let right_items = document.createElement('div');
-            right_items.className = 'item-right indent-l5';
-
+            let items = document.createElement('div');
+            items.className = 'indent';
             let longest_common_substring = longest_common_substrings[i_substr];
-            let rightItem;
-            let leftItem;
             for (let i = 0; i < indices_of_potential_theme_entries.length; ++i) {
+                let hilightedSubstringItemDiv = document.createElement('div');
+                let hilightedSubstringItem = document.createElement('span');
+                let clueDiv = document.createElement('div');
+                let clueItem = document.createElement('span');
                 let highlighted_substring_item = document.createElement('span');
                 add_highlighted_substring(highlighted_substring_item,
                     entries[indices_of_potential_theme_entries[i]],
                     longest_common_substring);
-                rightItem = document.createElement('div');
-                leftItem = document.createElement('div');
+                clueDiv.className = 'indent clue';
+                hilightedSubstringItemDiv.className = 'indent entry';
                 if (i % 2 === 0) {
-                    rightItem.className = 'hilight indent-l5';
-                    leftItem.className = 'hilight indent-l5';
+                    clueDiv.className += ' hilight';
+                    hilightedSubstringItemDiv.className += ' hilight';
                 }
-                rightItem.appendChild(document.createTextNode("[" + clues[indices_of_potential_theme_entries[i]] + "]"));
-                right_items.appendChild(rightItem);
-                leftItem.appendChild(highlighted_substring_item);
-                left_items.appendChild(leftItem);
+                hilightedSubstringItem.appendChild(highlighted_substring_item);
+                hilightedSubstringItemDiv.appendChild(hilightedSubstringItem);
+                clueItem.appendChild(document.createTextNode("[" + clues[indices_of_potential_theme_entries[i]] + "]"));
+                clueDiv.appendChild(clueItem);
+                items.appendChild(hilightedSubstringItemDiv);
+                items.appendChild(clueDiv);
             }
-
-            let heading = '\nlongest common substring: ' + (longest_common_substring.length > 0 ? longest_common_substring : '<none>');
-
-            // right before left, again.
-            some_items.appendChild(right_items);
-            some_items.appendChild(left_items);
-            add_named_section(retval, heading, some_items);
+            let heading = `longest common substring: ${longest_common_substring.length > 0 ? longest_common_substring : '<none>'}`;
+            add_named_section(retval, heading, items, 'indent', 'display: list-item;');
         }
     }
 
@@ -278,13 +300,29 @@ function addKeyValuePairToMultimap(multimap, key, value) {
 
 
 // given an element id, toggle its visibility
-function toggle_display(id) {
+function toggleById(id) {
+    "use strict";
     let element = document.getElementById(id);
     if (!(typeof element === 'undefined') || !(element == null)) {
-        if (element.style.display === 'none') {
-            element.style.display = 'block';
-        } else {
-            element.style.display = 'none';
+        let s = element.style;
+        flipDisplay(s);
+    }
+}
+
+// given an element class, toggle its visibility
+function toggleByClass(classTag) {
+    "use strict";
+    let elements = document.getElementsByClassName(classTag);
+    if (!(typeof elements === 'undefined') || !(element == null)) {
+        for (let i = 0; i < elements.length; ++i) {
+            let s = elements[i].style;
+            flipDisplay(s)
         }
     }
+}
+
+function flipDisplay(style) {
+    "use strict";
+
+    style.display = style.display === 'none' ? '': 'none';
 }
