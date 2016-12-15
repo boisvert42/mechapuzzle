@@ -110,21 +110,25 @@ table.grid div.number {
 }
 
 .items {
-    margin: 5px;
+    display: table;
+    table-layout: fixed;
 }
 
-.item-left {
-    float: none;
-    width: auto;
-    overflow: scroll;
+.items span {
+    display: table-cell;
+    text-align: left;
+    border: 0;
 }
 
-.item-right {
-    float: right;
-    width: 50%;
-    overflow: scroll;
-}
 
 .hilight {
-    background: #ffffcc;
+    background: #cccccc;
+}
+
+.indent {
+    margin-left: 15px;
+}
+
+mark {
+    background: #33cc99;
 }
