@@ -1,4 +1,4 @@
-var render_to_theme = 'theme_js';
+const render_to_theme = 'theme_js';
 
 function render_theme() {
     display_grid(render_to_theme);
@@ -7,11 +7,11 @@ function render_theme() {
     let list_of_lists_of_potential_theme_entries = document.createElement('div');
 
     let buttonLabels = ['Clues', 'Entries'];
-    let buttonActions = [function() { toggleByClass('entry') }, function() { toggleByClass('clue') }];
+    let buttonActions = [function() { toggleByClass('clue') }, function() { toggleByClass('entry') }];
     add_buttons(list_of_lists_of_potential_theme_entries, buttonLabels, buttonActions);
 
     create_twisty(list_of_lists_of_potential_theme_entries, 'toggle-starred', 'starred');
-    add_named_section(list_of_lists_of_potential_theme_entries, 'STARRED CLUES & ENTRIES',
+    add_named_section(list_of_lists_of_potential_theme_entries, 'STARRED CLUES',
         display_starred_clues(PUZAPP.puzdata));
 
     create_twisty(list_of_lists_of_potential_theme_entries, 'toggle-long', 'long');

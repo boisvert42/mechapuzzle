@@ -35,9 +35,9 @@ function symmetry() {
             break;
         }
     }
-    var symmetry_text = 'Grid is symmetric';
+    var symmetry_text = 'Grid is symmetric (180&deg; rotational symmetry)';
     if (!is_symmetric) {
-        symmetry_text = '<mark>Grid does not have standard symmetry</mark>';
+        symmetry_text = '<mark>Grid does not have standard (180&deg; rotational) symmetry</mark>';
     }
     document.getElementById(grid_render_to).innerHTML += symmetry_text + '<br />\n';
 }
