@@ -84,11 +84,10 @@
 
 <script type="text/javascript">
     function handleFileSelect(evt) {
-        var files = evt.target.files; // FileList object
+        const files = evt.target.files; // FileList object
 
         // files is a FileList of File objects.
-        var output = [];
-        for (var i = 0, f; f = files[i]; i++) {
+        for (let i = 0, f; f = files[i]; i++) {
 
             // Only process small files.
             if (f.size >= 7500) {
@@ -96,12 +95,12 @@
                 continue;
             }
             if (f) {
-                var r = new FileReader();
+                const r = new FileReader();
                 r.onload = (function (theFile) {
                     return function (e) {
-                        var contents = e.target.result;
-                        var elt = document.getElementById('puzjs_output');
-                        var puzdata = PUZAPP.parsepuz(contents);
+                        let contents = e.target.result;
+//                        var elt = document.getElementById('puzjs_output');
+                        const puzdata = PUZAPP.parsepuz(contents);
                         render_all();
                     };
                 })(f);
