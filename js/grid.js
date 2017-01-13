@@ -42,23 +42,34 @@ function symmetry() {
     document.getElementById(grid_render_to).innerHTML += symmetry_text + '<br />\n';
 }
 
-/** Helper function to get across and down clues from a square **/
-
-function mark_theme(ix, dir) {
-    // Grab the [across/down] entry corresponding to the index and mark it as theme
-    return false;
+/* toggle theme status of an entry */
+function toggle_theme(grid_num, dir, render_to) {
+    var puzdata = PUZAPP.puzdata;
+    dir_index = (dir == 'across') ? 0 : 1;
+    dir_theme_entries = puzdata.theme[dir_index];
+    if (dir_theme_entries.has(grid_num)) {
+        dir_theme_entries.remove(grid_num);
+    }
+    else {
+        dir_theme_entries.add(grid_num);
+    }
+    // Re-display the grid
+    display_grid(render_to);
+    return true;
 }
 
-function display_grid() // display_grid(render_to = NULL, color_grid = NULL)
+function display_grid() // display_grid(render_to = NULL)
 {
     var puzdata = PUZAPP.puzdata;
 
     // Optional arguments
     var render_to = (arguments[0] ? arguments[0] : grid_render_to);
-    var color_grid = (arguments[1] ? arguments[1] : null);
+    
+    document.getElementById(render_to).innerHTML = '';
 
     var h = puzdata.height;
     var w = puzdata.width;
+    var sol = puzdata.solution;
     var sol = puzdata.solution;
     var gn = puzdata.sqNbrs;
     var grid_html = '<table class="grid">\n';
@@ -76,6 +87,11 @@ function display_grid() // display_grid(render_to = NULL, color_grid = NULL)
             var tooltip_text = across_number + 'A: ' + puzdata.across_clues[across_number];
             tooltip_text += '<br />';
             tooltip_text += down_number + 'D: ' + puzdata.down_clues[down_number];
+            
+            /** For coloring **/
+            if (puzdata.theme[0].has(across_number) || puzdata.theme[1].has(down_number)) {
+                td_class = ' class=theme';
+            }
 
             /**
              * All cells have the class of "puzcell"
@@ -86,8 +102,8 @@ function display_grid() // display_grid(render_to = NULL, color_grid = NULL)
                 div_class_array.push('circle');
             }
             var div_class = ' class="' + div_class_array.join(' ') + '"';
-            grid_html += '<td' + td_class + ' onclick="mark_theme(' + grid_index + ',\'across\');return false;" ';
-            grid_html += 'oncontextmenu="mark_theme(' + grid_index + ',\'down\');return false;">\n';
+            grid_html += '<td' + td_class + ' onclick="toggle_theme(' + across_number + ',\'across\',\'' + render_to + '\');return false;" ';
+            grid_html += 'oncontextmenu="toggle_theme(' + down_number + ',\'down\',\'' + render_to + '\');return false;">\n';
             grid_html += '  <div' + div_class + '>\n';
             grid_html += '    <div class="number">' + gn[grid_index] + '</div>\n';
             grid_html += '    <div class="letter">' + sol_at_index + '</div>\n';

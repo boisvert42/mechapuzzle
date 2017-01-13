@@ -66,6 +66,10 @@ table.grid td.black {
     background-color: black;
 }
 
+table.grid td.theme {
+    background-color: yellow;
+}
+
 table.grid div.puzcell:hover .celltooltip {
     display: block;
 }

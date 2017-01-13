@@ -1,4 +1,5 @@
 const render_to_theme = 'theme_js';
+const potential_theme_entries_div = 'theme0';
 
 function render_theme() {
     display_grid(render_to_theme);
@@ -18,7 +19,7 @@ function render_theme() {
     add_named_section(list_of_lists_of_potential_theme_entries, 'LONG ENTRIES',
         display_long_entries_and_common_substrings(PUZAPP.puzdata, min_theme_len));
 
-    document.getElementById(render_to_theme).appendChild(list_of_lists_of_potential_theme_entries);
+    document.getElementById(potential_theme_entries_div).appendChild(list_of_lists_of_potential_theme_entries);
 }
 
 // append a <div> containing n <button> elements defined by an n-sized array of labels
