@@ -177,8 +177,8 @@ var ActiveXObject, parsedPuz, filecontents, PUZAPP = {};
         if (!sanity_check) {
             alert('Not a .puz file!');
             throw {
-                name: "BADMAGICNUMBER",
-                message: "File did not contain expected magic number, contained '" + filemagic + "'."
+                name: "MISSINGACROSS&DOWN",
+                message: "Could find string 'ACROSS&DOWN' in puzzle."
             };
         }
         var retval = new Puz(),
