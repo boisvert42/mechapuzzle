@@ -45,8 +45,8 @@ function symmetry() {
 /* toggle theme status of an entry */
 function toggle_theme(grid_num, dir, render_to) {
     var puzdata = PUZAPP.puzdata;
-    dir_index = (dir == 'across') ? 0 : 1;
-    dir_theme_entries = puzdata.theme[dir_index];
+    var dir_index = (dir == 'across') ? 0 : 1;
+    var dir_theme_entries = puzdata.theme[dir_index];
     if (dir_theme_entries.has(grid_num)) {
         dir_theme_entries.remove(grid_num);
     }
@@ -69,7 +69,6 @@ function display_grid() // display_grid(render_to = NULL)
 
     var h = puzdata.height;
     var w = puzdata.width;
-    var sol = puzdata.solution;
     var sol = puzdata.solution;
     var gn = puzdata.sqNbrs;
     var grid_html = '<table class="grid">\n';
