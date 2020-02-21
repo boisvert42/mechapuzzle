@@ -34,7 +34,7 @@ function entry_lengths()
 	var categories = d3.range(1,d3.max([puzdata.width,puzdata.height])+1);
 	var data = [];
     var clues;
-    var entries_by_count = new Object();
+    var entries_by_count = {};
 	// Initialize the data
 	for (var i=0; i<categories.length; i++)
 	{
@@ -42,7 +42,7 @@ function entry_lengths()
 	}
     for (var j=0; j < entry_lists.length; j++)
     {
-        entries = entry_lists[j];
+        var entries = entry_lists[j];
         clues = (entries === puzdata.across_entries) ? puzdata.across_clues : puzdata.down_clues;
         for (var key in entries)
         {
