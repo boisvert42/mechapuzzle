@@ -354,9 +354,9 @@ var ActiveXObject, parsedPuz, filecontents, PUZAPP = {};
         retval.across_clues = across_clues;
         retval.down_clues = down_clues;
         retval.down_entries = down_entries;
-        
+
         // theme
-        retval.theme = [ d3.set(), d3.set() ];
+        retval.theme = [d3.set(), d3.set()];
 
         PUZAPP.puzdata = retval;
 

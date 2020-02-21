@@ -64,7 +64,7 @@ function display_grid() // display_grid(render_to = NULL)
 
     // Optional arguments
     var render_to = (arguments[0] ? arguments[0] : grid_render_to);
-    
+
     document.getElementById(render_to).innerHTML = '';
 
     var h = puzdata.height;
@@ -86,7 +86,7 @@ function display_grid() // display_grid(render_to = NULL)
             var tooltip_text = across_number + 'A: ' + puzdata.across_clues[across_number];
             tooltip_text += '<br />';
             tooltip_text += down_number + 'D: ' + puzdata.down_clues[down_number];
-            
+
             /** For coloring **/
             if (puzdata.theme[0].has(across_number) || puzdata.theme[1].has(down_number)) {
                 td_class = ' class=theme';
