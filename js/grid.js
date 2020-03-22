@@ -3,6 +3,9 @@ var colors = ['aqua', 'gold', 'chartreuse', 'greenyellow', 'lightskyblue', 'oran
 
 var standard_letter_distribution = [11.3, 1.9, 2.9, 3.6, 13.0, 1.1, 2.0, 2.4, 6.3, 0.3, 1.1, 5.1, 2.9, 6.0, 7.7, 2.9, 0.1, 6.9, 8.8, 7.2, 2.4, 0.8, 1.1, 0.3, 1.6, 0.3];
 
+var highlighted_letters = {'A':0, 'B':0, 'C':0, 'D':0, 'E':0, 'F':0, 'G':0, 'H':0, 'I':0, 'J':0, 'K':0, 'L':0, 'M':0, 'N':0, 'O':0, 'P':0, 'Q':0, 'R':0, 'S':0, 'T':0, 'U':0, 'V':0, 'W':0, 'X':0, 'Y':0, 'Z':0};
+var ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+
 function render_grid() {
     document.getElementById(grid_render_to).innerHTML = '';
     width_height();
@@ -91,6 +94,10 @@ function display_grid() // display_grid(render_to = NULL)
             if (puzdata.theme[0].has(across_number) || puzdata.theme[1].has(down_number)) {
                 td_class = ' class=theme';
             }
+            
+            if (highlighted_letters[sol_at_index]) {
+                td_class = ' class=highlighted';
+            }
 
             /**
              * All cells have the class of "puzcell"
@@ -158,6 +165,11 @@ function letter_frequency() {
     standard_counts.unshift('Typical puzzle');
     letter_counts.unshift('This puzzle');
     var plot_data = [standard_counts, letter_counts];
+    
+    function highlight_letter(x) {
+        highlighted_letters[ALPHABET.charAt(x)] = 1 - highlighted_letters[ALPHABET.charAt(x)];
+        display_grid(grid_render_to);
+    }
 
     // Now plot!
     var chart = c3.generate({
@@ -168,7 +180,8 @@ function letter_frequency() {
         data: {
             columns: plot_data,
             type: 'bar',
-            labels: true
+            labels: true,
+            onclick: function (e) { highlight_letter(e.x); }
         },
         axis: {
             x: {
