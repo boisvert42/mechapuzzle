@@ -175,7 +175,7 @@ function letter_frequency() {
     var chart = c3.generate({
         bindto: '#grid0',
         title: {
-            text: 'Letter counts'
+            text: 'Letter counts (click a bar to highlight in the grid)'
         },
         data: {
             columns: plot_data,
