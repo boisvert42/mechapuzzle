@@ -355,7 +355,40 @@ var ActiveXObject, parsedPuz, filecontents, PUZAPP = {};
         retval.down_clues = down_clues;
         retval.down_entries = down_entries;
 
-        // theme
+        // All entries
+		var all_entries = [];
+		var obj, mynum;
+		for (x=0; x<w; x++) {
+			for (y=0; y<h; y++) {
+				var myindex = retval.toIndex(x, y);
+				if (retval.startAcrossWord(x,y)) {
+					mynum = retval.acrossWordNbrs[myindex];
+					obj = {};
+					obj['Number'] = mynum;
+					obj['Direction'] = 'Across';
+					obj['Clue'] = across_clues[mynum];
+					obj['Entry'] = across_entries[mynum];
+					obj['x'] = x;
+					obj['y'] = y;
+					obj['Grid_Order'] = retval.toIndex(x, y);
+					all_entries.push(obj);
+				}
+				if (retval.startDownWord(x,y)) {
+					mynum = retval.downWordNbrs[myindex];
+					obj = {};
+					obj['Number'] = mynum;
+					obj['Direction'] = 'Down';
+					obj['Clue'] = down_clues[mynum];
+					obj['Entry'] = down_entries[mynum];
+					obj['x'] = x;
+					obj['y'] = y;
+					obj['Grid_Order'] = retval.toIndex(x, y);
+					all_entries.push(obj);
+				}
+			}
+		}
+		retval.all_entries = all_entries;
+		
         retval.theme = [d3.set(), d3.set()];
 
         PUZAPP.puzdata = retval;

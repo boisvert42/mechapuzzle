@@ -10,16 +10,29 @@ function isLetter(str) {
     return str.length === 1 && str.match(/[a-z]/i);
 }
 
-function clues_of_length(arr)
+function clues_of_length(clue_length, sort_by)
 {
     // Display clues of a given length in the #clues1 div
-    var html = '<big><pre>\n';
-    for (var j = 0; j < arr.length; j++) {
-        var entry = arr[j][0]; var clue = arr[j][1];
-        html += ' [ ' + clue + ' ] : ' + entry + ' ]\n';
+    var html = '';
+	html += 'Sort by: ';
+	html += '<form action="." name="entry_sorter">';
+	html += '<input type="radio" id="Clue" name="entry_sort" value="Clue" onclick="clues_of_length(' + clue_length + ', \'Clue\');"><label for="Clue">Clue</label>';
+	html += '<input type="radio" id="Entry" name="entry_sort" value="Entry" onclick="clues_of_length(' + clue_length + ', \'Entry\');"><label for="Entry">Entry</label>';
+	html += '<input type="radio" id="Number" name="entry_sort" value="Number"  onclick="clues_of_length(' + clue_length + ', \'Number\');"><label for="Number">Number</label>';
+	html += '</form>\n';
+	html += '<big><pre>\n';
+	var myobj = PUZAPP.puzdata.all_entries.filter(x => x['Clue'].split(' ').length == clue_length);
+	if (clue_length >= 10) {
+		myobj = PUZAPP.puzdata.all_entries.filter(x => x['Clue'].split(' ').length >= 10);
+	}
+	sort_entries(myobj, sort_by);
+    for (var j = 0; j < myobj.length; j++) {
+        var entry = myobj[j]['Entry']; var clue = myobj[j]['Clue'];
+        html += entry + ': [ ' + clue + ' ]\n';
     }
     html += '</pre></big>\n';
     document.getElementById('clues1').innerHTML = html;
+	return false;
 }
 
 function clue_initial_letters() {
@@ -86,7 +99,7 @@ function clue_lengths() {
             columns: [data],
             type: 'bar',
             labels: true,
-			onclick: function (e) { clues_of_length(clues_by_count[e.index + 1]); }
+			onclick: function (e) { clues_of_length(e.index + 1, 'Number'); }
         },
         size: {
             // Chart won't render unless we initialize the size up front

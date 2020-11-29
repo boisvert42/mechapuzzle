@@ -14,16 +14,26 @@ function entry_metadata()
     document.getElementById(entries_render_to).innerHTML += 'Word count: ' + num_entries;
 }
 
-function entries_of_length(arr)
+function entries_of_length(entry_length, sort_by)
 {
     // Display entries of a given length in the #entries1 div
-    var html = '<big><pre>\n';
-    for (var j = 0; j < arr.length; j++) {
-        var entry = arr[j][0]; var clue = arr[j][1];
+    var html = '';
+	html += 'Sort by: ';
+	html += '<form action="." name="entry_sorter">';
+	html += '<input type="radio" id="Clue" name="entry_sort" value="Clue" onclick="entries_of_length(' + entry_length + ', \'Clue\');"><label for="Clue">Clue</label>';
+	html += '<input type="radio" id="Entry" name="entry_sort" value="Entry" onclick="entries_of_length(' + entry_length + ', \'Entry\');"><label for="Entry">Entry</label>';
+	html += '<input type="radio" id="Number" name="entry_sort" value="Number"  onclick="entries_of_length(' + entry_length + ', \'Number\');"><label for="Number">Number</label>';
+	html += '</form>\n';
+	html += '<big><pre>\n';
+	var myobj = PUZAPP.puzdata.all_entries.filter(x => x.Entry.length == entry_length);
+	sort_entries(myobj, sort_by);
+    for (var j = 0; j < myobj.length; j++) {
+        var entry = myobj[j]['Entry']; var clue = myobj[j]['Clue'];
         html += entry + ': [ ' + clue + ' ]\n';
     }
     html += '</pre></big>\n';
     document.getElementById('entries1').innerHTML = html;
+	return false;
 }
 
 function entry_lengths()
@@ -70,7 +80,7 @@ function entry_lengths()
             columns: [data],
             type: 'bar',
             labels: true,
-            onclick: function (e) { entries_of_length(entries_by_count[e.index + 1]); }
+            onclick: function (e) {entries_of_length(e.index+1, 'Number'); }
         },
         size: {
             // Chart won't render unless we initialize the size up front

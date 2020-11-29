@@ -16,3 +16,21 @@ function render_metadata() {
     document.getElementById('metadata').innerHTML += puzdata.author + '<br />';
     document.getElementById('metadata').innerHTML += puzdata.notes + '<br />';
 }
+
+function sort_string(a, b) {
+	var fa = a.toLowerCase();
+	var fb = b.toLowerCase();
+	if (fa < fb) {return -1;}
+	if (fa > fb) {return 1;}
+	return 0;
+}
+
+function sort_entries(arr, by) {
+	if (by == 'Number') {
+		arr.sort((a, b) => {return a['Number'] - b['Number'];});
+	} else if (by == 'Clue') {
+		arr.sort((a, b) => {return sort_string(a['Clue'], b['Clue']);});
+	} else if (by == 'Entry') {
+		arr.sort((a, b) => {return sort_string(a['Entry'], b['Entry']);});
+	}
+}
