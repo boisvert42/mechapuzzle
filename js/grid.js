@@ -15,8 +15,8 @@ function render_grid() {
 }
 
 function width_height() {
-    var puzdata = PUZAPP.puzdata;
-    var width_height = puzdata.width + 'x' + puzdata.height;
+    var puzdata = window.puzdata;
+    var width_height = puzdata.metadata.width + 'x' + puzdata.metadata.height;
     var is_unusual_size = false;
     if (puzdata.width != 15 || puzdata.height != 15) {
         is_unusual_size = true;
@@ -63,16 +63,16 @@ function toggle_theme(grid_num, dir, render_to) {
 
 function display_grid() // display_grid(render_to = NULL)
 {
-    var puzdata = PUZAPP.puzdata;
+    var puzdata = window.puzdata;
 
     // Optional arguments
     var render_to = (arguments[0] ? arguments[0] : grid_render_to);
 
     document.getElementById(render_to).innerHTML = '';
 
-    var h = puzdata.height;
-    var w = puzdata.width;
-    var sol = puzdata.solution;
+    var h = puzdata.metadata.height;
+    var w = puzdata.metadata.width;
+    var sol = puzdata.get_solution_array();
     var gn = puzdata.sqNbrs;
     var grid_html = '<table class="grid">\n';
     for (var i = 0; i < h; i++) {
@@ -94,7 +94,7 @@ function display_grid() // display_grid(render_to = NULL)
             if (puzdata.theme[0].has(across_number) || puzdata.theme[1].has(down_number)) {
                 td_class = ' class=theme';
             }
-            
+
             if (highlighted_letters[sol_at_index]) {
                 td_class = ' class=highlighted';
             }
@@ -165,7 +165,7 @@ function letter_frequency() {
     standard_counts.unshift('Typical puzzle');
     letter_counts.unshift('This puzzle');
     var plot_data = [standard_counts, letter_counts];
-    
+
     function highlight_letter(x) {
         highlighted_letters[ALPHABET.charAt(x)] = 1 - highlighted_letters[ALPHABET.charAt(x)];
         display_grid(grid_render_to);
@@ -195,5 +195,3 @@ function letter_frequency() {
     });
     CHARTS['grid'].push(chart);
 }
-
-
