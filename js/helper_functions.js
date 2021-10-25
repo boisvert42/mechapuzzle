@@ -10,11 +10,11 @@ function render_all() {
 }
 
 function render_metadata() {
-    var puzdata = PUZAPP.puzdata;
+    var puzdata = window.puzdata;
     document.getElementById('metadata').innerHTML = '';
-    document.getElementById('metadata').innerHTML += puzdata.title + '<br />';
-    document.getElementById('metadata').innerHTML += puzdata.author + '<br />';
-    document.getElementById('metadata').innerHTML += puzdata.notes + '<br />';
+    document.getElementById('metadata').innerHTML += puzdata.metadata.title + '<br />';
+    document.getElementById('metadata').innerHTML += puzdata.metadata.author + '<br />';
+    document.getElementById('metadata').innerHTML += puzdata.metadata.description + '<br />';
 }
 
 function sort_string(a, b) {
