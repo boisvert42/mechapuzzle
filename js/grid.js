@@ -18,7 +18,7 @@ function width_height() {
     var puzdata = window.puzdata;
     var width_height = puzdata.metadata.width + 'x' + puzdata.metadata.height;
     var is_unusual_size = false;
-    if (puzdata.width != 15 || puzdata.height != 15) {
+    if (puzdata.metadata.width != 15 || puzdata.metadata.height != 15) {
         is_unusual_size = true;
     }
     if (is_unusual_size) {
@@ -28,8 +28,12 @@ function width_height() {
 }
 
 function symmetry() {
-    var puzdata = PUZAPP.puzdata;
-    var sol = puzdata.solution;
+    var puzdata = window.puzdata;
+    var sol = '';
+    puzdata.cells.forEach(function(x) {
+      if (x.type == 'block') {sol += '.';}
+      else {sol += x.solution;}
+    });
     var sol_length = sol.length;
     var is_symmetric = true;
     for (var i = 0; i < sol_length / 2; i++) {
@@ -47,7 +51,7 @@ function symmetry() {
 
 /* toggle theme status of an entry */
 function toggle_theme(grid_num, dir, render_to) {
-    var puzdata = PUZAPP.puzdata;
+    var puzdata = window.puzdata;
     var dir_index = (dir == 'across') ? 0 : 1;
     var dir_theme_entries = puzdata.theme[dir_index];
     if (dir_theme_entries.has(grid_num)) {
@@ -73,27 +77,40 @@ function display_grid() // display_grid(render_to = NULL)
     var h = puzdata.metadata.height;
     var w = puzdata.metadata.width;
     var sol = puzdata.get_solution_array();
-    var gn = puzdata.sqNbrs;
+    //var gn = puzdata.sqNbrs;
+    var gn1 = puzdata.cells.map(x=>x.number);
+    var gn = [];
+    while(gn1.length) gn.push(gn1.splice(0,w));
     var grid_html = '<table class="grid">\n';
+    // for circles
+    var background_shapes = puzdata.cells.map(x => x['background-shape']);
+
     for (var i = 0; i < h; i++) {
         grid_html += '<tr>';
         for (var j = 0; j < w; j++) {
             var grid_index = i * w + j;
-            var sol_at_index = sol[grid_index];
+            var sol_at_index = sol[i][j];
             var td_class_arr = [];
             var td_class = (sol_at_index == '.' ? ' class=black' : '');
 
             /** For the tooltip **/
+            // TBD for now
+            /*
             var across_number = puzdata.acrossWordNbrs[grid_index];
             var down_number = puzdata.downWordNbrs[grid_index];
             var tooltip_text = across_number + 'A: ' + puzdata.across_clues[across_number];
             tooltip_text += '<br />';
             tooltip_text += down_number + 'D: ' + puzdata.down_clues[down_number];
+            */
+            var tooltip_text = '';
 
             /** For coloring **/
+            // TBD
+            /*
             if (puzdata.theme[0].has(across_number) || puzdata.theme[1].has(down_number)) {
                 td_class = ' class=theme';
             }
+            */
 
             if (highlighted_letters[sol_at_index]) {
                 td_class = ' class=highlighted';
@@ -104,9 +121,10 @@ function display_grid() // display_grid(render_to = NULL)
              * Circled ones have an additional "circle" class
              **/
             var div_class_array = ['puzcell'];
-            if (puzdata.circles[grid_index]) {
+            if (background_shapes[grid_index]) {
                 div_class_array.push('circle');
             }
+            var across_number = ''; var down_number ='';
             var div_class = ' class="' + div_class_array.join(' ') + '"';
             grid_html += '<td' + td_class + ' onclick="toggle_theme(' + across_number + ',\'across\',\'' + render_to + '\');return false;" ';
             grid_html += 'oncontextmenu="toggle_theme(' + down_number + ',\'down\',\'' + render_to + '\');return false;">\n';
@@ -127,8 +145,12 @@ function display_grid() // display_grid(render_to = NULL)
 }
 
 function letter_frequency() {
-    var puzdata = PUZAPP.puzdata;
-    var sol = puzdata.solution;
+    var puzdata = window.puzdata;
+    var sol = '';
+    puzdata.cells.forEach(function(x) {
+      if (x.type == 'block') {sol += '.';}
+      else {sol += x.solution;}
+    });
     // Container for letter counts
     var letter_counts = [];
     for (var i = 0; i < 26; i++) {
