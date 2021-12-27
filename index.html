@@ -107,6 +107,19 @@
                         window.puzdata = xw_constructor.fromData(contents);
                         // add "theme" to this
                         window.puzdata.theme = [d3.set(), d3.set()];
+                        // add the useful "all_entries" with Number / Direction / Clue / Entry
+                        var all_entries = [];
+                        var entry_mapping = window.puzdata.get_entry_mapping();
+                        window.puzdata.clues.forEach(function(clues) {
+                          var direction = clues.title;
+                          clues.clue.forEach(function(clue) {
+                            var number = clue.word;
+                            var clue1 = clue.text;
+                            var entry = entry_mapping[number];
+                            all_entries.push({'Number': number, 'Direction': direction, 'Clue': clue1, 'Entry': entry});
+                          });
+                        });
+                        window.puzdata.all_entries = all_entries;
                         console.log(window.puzdata);
                         render_all();
                     };
