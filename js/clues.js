@@ -68,7 +68,7 @@ function clue_lengths() {
     var entry_mapper = puzdata.get_entry_mapping();
     for (var j = 0; j < clue_lists.length; j++) {
         var clues = clue_lists[j].clue;
-        clues.foreach(function(x) {
+        clues.forEach(function(x) {
           // find the length of the clue
           var clue_text = x.text;
           var clue_length = clue_text.split(' ').length;
