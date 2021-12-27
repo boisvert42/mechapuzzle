@@ -25,7 +25,7 @@ function entries_of_length(entry_length, sort_by)
 	html += '<input type="radio" id="Number" name="entry_sort" value="Number"  onclick="entries_of_length(' + entry_length + ', \'Number\');"><label for="Number">Number</label>';
 	html += '</form>\n';
 	html += '<big><pre>\n';
-	var myobj = PUZAPP.puzdata.all_entries.filter(x => x.Entry.length == entry_length);
+	var myobj = window.puzdata.all_entries.filter(x => x.Entry.length == entry_length);
 	sort_entries(myobj, sort_by);
     for (var j = 0; j < myobj.length; j++) {
         var entry = myobj[j]['Entry']; var clue = myobj[j]['Clue'];
