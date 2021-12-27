@@ -9,8 +9,8 @@ function render_entries()
 
 function entry_metadata()
 {
-    var puzdata = PUZAPP.puzdata;
-    var num_entries = puzdata.nbrClues;
+    var puzdata = window.puzdata;
+    var num_entries = Object.keys(puzdata.get_entry_mapping()).length;
     document.getElementById(entries_render_to).innerHTML += 'Word count: ' + num_entries;
 }
 
@@ -39,9 +39,8 @@ function entries_of_length(entry_length, sort_by)
 function entry_lengths()
 {
     // Display the number of entries for each length
-    var puzdata = PUZAPP.puzdata;
-    var entry_lists = [puzdata.across_entries, puzdata.down_entries];
-    var categories = d3.range(1, d3.max([puzdata.width, puzdata.height]) + 1);
+    var puzdata = window.puzdata;
+    var categories = d3.range(1, d3.max([puzdata.metadata.width, puzdata.metadata.height]) + 1);
     var data = [];
     var clues;
     var entries_by_count = {};
@@ -50,25 +49,27 @@ function entry_lengths()
     {
         data.push(0);
     }
-    for (var j = 0; j < entry_lists.length; j++)
-    {
-        var entries = entry_lists[j];
-        clues = (entries === puzdata.across_entries) ? puzdata.across_clues : puzdata.down_clues;
-        for (var key in entries)
-        {
-            if (!entries.hasOwnProperty(key))
-                continue;
-            // Find the length of the entry
-            var entry_length = entries[key].length;
-            // Push to "data"
-            data[entry_length - 1] += 1;
-            // Add to entries_by_count
-            if (!entries_by_count[entry_length]) {
-                entries_by_count[entry_length] = [];
-            }
-            entries_by_count[entry_length].push([entries[key], clues[key]]);
-        }
-    }
+    // Create a mapping of word number -> clue
+    // TODO: maybe make this part of JSCrossword?
+    var clue_mapping = {};
+    puzdata.clues.forEach(function(clues) {
+      clues.clue.forEach(function(clue) {
+        clue_mapping[clue.word] = clue.text;
+      });
+    });
+    // Loop through the entries
+    var entry_mapping = window.puzdata.get_entry_mapping();
+    Object.keys(entry_mapping).forEach(function(word_num) {
+      var entry = entry_mapping[word_num];
+      var entry_length = entry.length;
+      // push to "data"
+      data[entry_length - 1] += 1;
+      // add to entries_by_count
+      if (!entries_by_count[entry_length]) {
+        entries_by_count[entry_length] = [];
+      }
+      entries_by_count[entry_length].push([entry, clue_mapping[word_num]]);
+    });
     data.unshift('Count');
     // Plot
     var chart = c3.generate({
