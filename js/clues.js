@@ -12,8 +12,9 @@ function isLetter(str) {
 
 function clues_of_length(clue_length, sort_by)
 {
-    // Display clues of a given length in the #clues1 div
-    var html = '';
+  // Display clues of a given length in the #clues1 div
+  puzdata = window.puzdata;
+  var html = '';
 	html += 'Sort by: ';
 	html += '<form action="." name="entry_sorter">';
 	html += '<input type="radio" id="Clue" name="entry_sort" value="Clue" onclick="clues_of_length(' + clue_length + ', \'Clue\');"><label for="Clue">Clue</label>';
@@ -21,9 +22,10 @@ function clues_of_length(clue_length, sort_by)
 	html += '<input type="radio" id="Number" name="entry_sort" value="Number"  onclick="clues_of_length(' + clue_length + ', \'Number\');"><label for="Number">Number</label>';
 	html += '</form>\n';
 	html += '<big><pre>\n';
-	var myobj = PUZAPP.puzdata.all_entries.filter(x => x['Clue'].split(' ').length == clue_length);
+
+	var myobj = puzdata.all_entries.filter(x => x['Clue'].split(' ').length == clue_length);
 	if (clue_length >= 10) {
-		myobj = PUZAPP.puzdata.all_entries.filter(x => x['Clue'].split(' ').length >= 10);
+		myobj = puzdata.all_entries.filter(x => x['Clue'].split(' ').length >= 10);
 	}
 	sort_entries(myobj, sort_by);
     for (var j = 0; j < myobj.length; j++) {
@@ -76,19 +78,14 @@ function clue_lengths() {
               clue_length = 10;
           // Push to "data"
           data[clue_length - 1] += 1;
+          // Push to "clues_by_count"
           if (!clues_by_count[clue_length]) {
             clues_by_count[clue_length] = [];
           }
           clues_by_count[clue_length].push([entry_mapper[x.word], clue_text]);
         });
-        for (var key in clues) {
-			// Push to clues_by_count
-			if (!clues_by_count[clue_length]) {
-                clues_by_count[clue_length] = [];
-            }
-			clues_by_count[clue_length].push([entries[key], clues[key]]);
-        }
     }
+
     data.unshift('Count');
     // Plot
     var chart = c3.generate({
@@ -116,7 +113,6 @@ function clue_lengths() {
                 label: 'Count'
             }
         },
-
     });
     CHARTS['clues'].push(chart);
 }
