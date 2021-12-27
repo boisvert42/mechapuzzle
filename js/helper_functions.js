@@ -6,15 +6,15 @@ function render_all() {
     render_entries();
 
     // This is just to show the raw data for development purposes
-    document.getElementById('rawdata_js').innerHTML = JSON.stringify(PUZAPP.puzdata, null, ' ');
+    document.getElementById('rawdata_js').innerHTML = JSON.stringify(window.puzdata, null, ' ');
 }
 
 function render_metadata() {
-    var puzdata = PUZAPP.puzdata;
+    var puzdata = window.puzdata;
     document.getElementById('metadata').innerHTML = '';
-    document.getElementById('metadata').innerHTML += puzdata.title + '<br />';
-    document.getElementById('metadata').innerHTML += puzdata.author + '<br />';
-    document.getElementById('metadata').innerHTML += puzdata.notes + '<br />';
+    document.getElementById('metadata').innerHTML += puzdata.metadata.title + '<br />';
+    document.getElementById('metadata').innerHTML += puzdata.metadata.author + '<br />';
+    document.getElementById('metadata').innerHTML += puzdata.metadata.description + '<br />';
 }
 
 function sort_string(a, b) {

@@ -14,7 +14,9 @@
     <script src="js/clues.js"></script>
     <script src="js/entries.js"></script>
     <script src="js/helper_functions.js"></script>
-    <script src="js/puz.js"></script>
+    <!--<script src="js/puz.js"></script>-->
+    <script src="js/jscrossword/jscrossword_combined.js"></script>
+
 
     <!-- Load d3.js and c3.js -->
     <script src="js/d3.v3.min.js" charset="utf-8"></script>
@@ -26,8 +28,8 @@
 
 <body onload="init()">
 
-<p>Select a solved .puz file to analyze.</p>
-<input type="file" id="files" name="files"/>
+<p>Select a puzzle file to analyze.  If a .puz file it must be unlocked.</p>
+<input type="file" id="files" name="files" accept=".puz,.xml,.jpz,.xpz,.ipuz"/>
 <br/><br/>
 <div id="metadata"></div>
 
@@ -90,7 +92,7 @@
         for (let i = 0, f; f = files[i]; i++) {
 
             // Only process small files.
-            if (f.size >= 7500) {
+            if (f.size >= 75000) {
                 alert('This file is too big.');
                 continue;
             }
@@ -99,8 +101,26 @@
                 r.onload = (function (theFile) {
                     return function (e) {
                         let contents = e.target.result;
-//                        var elt = document.getElementById('puzjs_output');
-                        const puzdata = PUZAPP.parsepuz(contents);
+                        //var elt = document.getElementById('puzjs_output');
+                        //const puzdata = PUZAPP.parsepuz(contents);
+                        var xw_constructor = new JSCrossword();
+                        window.puzdata = xw_constructor.fromData(contents);
+                        // add "theme" to this
+                        window.puzdata.theme = [d3.set(), d3.set()];
+                        // add the useful "all_entries" with Number / Direction / Clue / Entry
+                        var all_entries = [];
+                        var entry_mapping = window.puzdata.get_entry_mapping();
+                        window.puzdata.clues.forEach(function(clues) {
+                          var direction = clues.title;
+                          clues.clue.forEach(function(clue) {
+                            var number = clue.word;
+                            var clue1 = clue.text;
+                            var entry = entry_mapping[number];
+                            all_entries.push({'Number': number, 'Direction': direction, 'Clue': clue1, 'Entry': entry});
+                          });
+                        });
+                        window.puzdata.all_entries = all_entries;
+                        console.log(window.puzdata);
                         render_all();
                     };
                 })(f);

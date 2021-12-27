@@ -13,11 +13,11 @@ function render_theme() {
 
     create_twisty(list_of_lists_of_potential_theme_entries, 'toggle-starred', 'starred');
     add_named_section(list_of_lists_of_potential_theme_entries, 'STARRED CLUES',
-        display_starred_clues(PUZAPP.puzdata));
+        display_starred_clues(window.puzdata));
 
     create_twisty(list_of_lists_of_potential_theme_entries, 'toggle-long', 'long');
     add_named_section(list_of_lists_of_potential_theme_entries, 'LONG ENTRIES',
-        display_long_entries_and_common_substrings(PUZAPP.puzdata, min_theme_len));
+        display_long_entries_and_common_substrings(window.puzdata, min_theme_len));
 
     document.getElementById(potential_theme_entries_div).appendChild(list_of_lists_of_potential_theme_entries);
 }
@@ -90,8 +90,11 @@ function display_starred_clues(puzdata) {
     retval.className = 'items indent';
     retval.id = 'starred';
 
-    let starred_across = getCluesPreOrPostfixedWith(puzdata.across_clues, '*', puzdata.across_entries, 'A');
-    let starred_down = getCluesPreOrPostfixedWith(puzdata.down_clues, '*', puzdata.down_entries, 'D');
+    var across_clues = puzdata.clues[0].clue;
+    var down_clues = puzdata.clues[1].clue;
+    var entry_map = puzdata.get_entry_mapping();
+    let starred_across = getCluesPreOrPostfixedWith(across_clues, '*', entry_map, 'A');
+    let starred_down = getCluesPreOrPostfixedWith(down_clues, '*', entry_map, 'D');
 
     let starred_clues = starred_across.clues.concat(starred_down.clues);
 
@@ -138,13 +141,13 @@ function getCluesPreOrPostfixedWith(clues, token, entries, type) {
     let retEntries = [];
 
     for (let i in clues) {
-        if (clues.hasOwnProperty(i)) {
-            if (clues[i].startsWith(token) || clues[i].endsWith(token)) {
-                // console.log(i + type + " " + clues[i]);
-                retClues.push(i + type + ' [' + clues[i] + ']');
-                retEntries.push(entries[i]);
-            }
-        }
+      var clue_num = clues[i].number;
+      var clue_text = clues[i].text;
+      var clue_entry = entries[clue_num];
+      if (clue_text.startsWith(token) || clue_text.endsWith(token)) {
+        retClues.push(clue_num + type + ' [' + clue_text + ']');
+        retEntries.push(entries[clue_num]);
+      }
     }
 
     return {

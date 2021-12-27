@@ -12,8 +12,9 @@ function isLetter(str) {
 
 function clues_of_length(clue_length, sort_by)
 {
-    // Display clues of a given length in the #clues1 div
-    var html = '';
+  // Display clues of a given length in the #clues1 div
+  puzdata = window.puzdata;
+  var html = '';
 	html += 'Sort by: ';
 	html += '<form action="." name="entry_sorter">';
 	html += '<input type="radio" id="Clue" name="entry_sort" value="Clue" onclick="clues_of_length(' + clue_length + ', \'Clue\');"><label for="Clue">Clue</label>';
@@ -21,9 +22,10 @@ function clues_of_length(clue_length, sort_by)
 	html += '<input type="radio" id="Number" name="entry_sort" value="Number"  onclick="clues_of_length(' + clue_length + ', \'Number\');"><label for="Number">Number</label>';
 	html += '</form>\n';
 	html += '<big><pre>\n';
-	var myobj = PUZAPP.puzdata.all_entries.filter(x => x['Clue'].split(' ').length == clue_length);
+
+	var myobj = puzdata.all_entries.filter(x => x['Clue'].split(' ').length == clue_length);
 	if (clue_length >= 10) {
-		myobj = PUZAPP.puzdata.all_entries.filter(x => x['Clue'].split(' ').length >= 10);
+		myobj = puzdata.all_entries.filter(x => x['Clue'].split(' ').length >= 10);
 	}
 	sort_entries(myobj, sort_by);
     for (var j = 0; j < myobj.length; j++) {
@@ -36,58 +38,54 @@ function clues_of_length(clue_length, sort_by)
 }
 
 function clue_initial_letters() {
-    var puzdata = PUZAPP.puzdata;
+    var puzdata = window.puzdata;
     var letters = [];
-    var clue_lists = [puzdata.across_clues, puzdata.down_clues];
+    var clue_lists = puzdata.clues;
     for (var j = 0; j < clue_lists.length; j++) {
-        var clues = clue_lists[j];
-        for (var key in clues) {
-            if (!clues.hasOwnProperty(key))
-                continue;
-            // Find the first letter of the clue
-            for (var i = 0; i < clues[key].length; i++) {
-                if (isLetter(clues[key].charAt(i))) {
-                    letters.push(clues[key].charAt(i).toUpperCase());
-                    break;
-                }
+        var clues = clue_lists[j].clue;
+        clues.forEach(function(x) {
+          var clue_text = x.text;
+          for (var i=0; i<clue_text.length; i++) {
+            if (isLetter(clue_text.charAt(i))) {
+              letters.push(clue_text.charAt(i).toUpperCase());
+              break;
             }
-        }
+          }
+        });
     }
-
     document.getElementById(clues_render_to).innerHTML += 'First letters of clues:<br />' + letters.join(' ') + '<br /><br />';
 }
 
 function clue_lengths() {
     // Display the number of clues for each length
-    var puzdata = PUZAPP.puzdata;
-    var clue_lists = [puzdata.across_clues, puzdata.down_clues];
-	var entry_lists = [puzdata.across_entries, puzdata.down_entries];
+    var puzdata = window.puzdata;
+    var clue_lists = puzdata.clues;
     var categories = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '>= 10'];
     var data = [];
-	var clues_by_count = {};
+	  var clues_by_count = {};
     // Initialize the data
     for (var i = 0; i < categories.length; i++) {
         data.push(0);
     }
+    var entry_mapper = puzdata.get_entry_mapping();
     for (var j = 0; j < clue_lists.length; j++) {
-        var clues = clue_lists[j];
-		var entries = entry_lists[j];
-        for (var key in clues) {
-            if (!clues.hasOwnProperty(key))
-                continue;
-            // Find the length of the clue
-            var clue_length = clues[key].split(' ').length;
-            if (clue_length >= 10)
-                clue_length = 10;
-            // Push to "data"
-            data[clue_length - 1] += 1;
-			// Push to clues_by_count
-			if (!clues_by_count[clue_length]) {
-                clues_by_count[clue_length] = [];
-            }
-			clues_by_count[clue_length].push([entries[key], clues[key]]);
-        }
+        var clues = clue_lists[j].clue;
+        clues.forEach(function(x) {
+          // find the length of the clue
+          var clue_text = x.text;
+          var clue_length = clue_text.split(' ').length;
+          if (clue_length >= 10)
+              clue_length = 10;
+          // Push to "data"
+          data[clue_length - 1] += 1;
+          // Push to "clues_by_count"
+          if (!clues_by_count[clue_length]) {
+            clues_by_count[clue_length] = [];
+          }
+          clues_by_count[clue_length].push([entry_mapper[x.word], clue_text]);
+        });
     }
+
     data.unshift('Count');
     // Plot
     var chart = c3.generate({
@@ -115,7 +113,6 @@ function clue_lengths() {
                 label: 'Count'
             }
         },
-
     });
     CHARTS['clues'].push(chart);
 }
