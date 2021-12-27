@@ -6,7 +6,7 @@ function render_all() {
     render_entries();
 
     // This is just to show the raw data for development purposes
-    document.getElementById('rawdata_js').innerHTML = JSON.stringify(PUZAPP.puzdata, null, ' ');
+    document.getElementById('rawdata_js').innerHTML = JSON.stringify(window.puzdata, null, ' ');
 }
 
 function render_metadata() {
