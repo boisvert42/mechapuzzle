@@ -77,10 +77,7 @@ function display_grid() // display_grid(render_to = NULL)
     var h = puzdata.metadata.height;
     var w = puzdata.metadata.width;
     var sol = puzdata.get_solution_array();
-    //var gn = puzdata.sqNbrs;
-    var gn1 = puzdata.cells.map(x=>x.number);
-    var gn = [];
-    while(gn1.length) gn.push(gn1.splice(0,w));
+    var gn1 = puzdata.cells.map(x=>x.number || '');
     var grid_html = '<table class="grid">\n';
     // for circles
     var background_shapes = puzdata.cells.map(x => x['background-shape']);
@@ -89,7 +86,7 @@ function display_grid() // display_grid(render_to = NULL)
         grid_html += '<tr>';
         for (var j = 0; j < w; j++) {
             var grid_index = i * w + j;
-            var sol_at_index = sol[i][j];
+            var sol_at_index = sol[i][j] || '.';
             var td_class_arr = [];
             var td_class = (sol_at_index == '.' ? ' class=black' : '');
 
@@ -129,7 +126,7 @@ function display_grid() // display_grid(render_to = NULL)
             grid_html += '<td' + td_class + ' onclick="toggle_theme(' + across_number + ',\'across\',\'' + render_to + '\');return false;" ';
             grid_html += 'oncontextmenu="toggle_theme(' + down_number + ',\'down\',\'' + render_to + '\');return false;">\n';
             grid_html += '  <div' + div_class + '>\n';
-            grid_html += '    <div class="number">' + gn[grid_index] + '</div>\n';
+            grid_html += '    <div class="number">' + gn1[grid_index] + '</div>\n';
             grid_html += '    <div class="letter">' + sol_at_index + '</div>\n';
             if (across_number != 0 && down_number != 0) {
                 grid_html += '    <span class="celltooltip">' + tooltip_text + '</span>\n';
