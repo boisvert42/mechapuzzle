@@ -81,6 +81,28 @@ function display_grid() // display_grid(render_to = NULL)
     // for circles
     var background_shapes = puzdata.cells.map(x => x['background-shape']);
 
+    // for tooltips: create lookups of (x, y) -> across number and down number
+    var acrossWordClues = {}, downWordClues = {};
+    var acrossEntries = thisGrid.acrossEntries();
+    var downEntries = thisGrid.downEntries();
+    Object.keys(acrossEntries).forEach(function(num) {
+        var wd = acrossEntries[num];
+        var clue = puzdata.all_entries.find((entry) => (entry.Number == num && entry.Direction.toLowerCase() == 'across'));
+        if (clue) {
+            wd.cells.forEach(x => acrossWordClues[x] = clue);
+        }
+    });
+
+    //console.log(downEntries);
+    Object.keys(downEntries).forEach(function(num) {
+        var wd = downEntries[num];
+        var clue = puzdata.all_entries.find((entry) => (entry.Number == num && entry.Direction.toLowerCase() == 'down'));
+        if (clue) {
+            wd.cells.forEach(x => downWordClues[x] = clue);
+        }
+    });
+    //console.log(downWordClues);
+
     for (var y = 0; y < h; y++) {
         grid_html += '<tr>';
         for (var x = 0; x < w; x++) {
@@ -90,16 +112,15 @@ function display_grid() // display_grid(render_to = NULL)
             var td_class_arr = [];
             var td_class = (thisGrid.isBlack(x, y) ? ' class=black' : '');
 
+            var awc = acrossWordClues[[x, y]] || {};
+            var dwc = downWordClues[[x, y]] || {};
+            var across_number = awc.Number || '';
+            var down_number = dwc.Number || '';
+
             /** For the tooltip **/
-            // TBD for now
-            /*
-            var across_number = puzdata.acrossWordNbrs[grid_index];
-            var down_number = puzdata.downWordNbrs[grid_index];
-            var tooltip_text = across_number + 'A: ' + puzdata.across_clues[across_number];
+            var tooltip_text = across_number + 'A: ' + awc.Clue;
             tooltip_text += '<br />';
-            tooltip_text += down_number + 'D: ' + puzdata.down_clues[down_number];
-            */
-            var tooltip_text = '';
+            tooltip_text += down_number + 'D: ' + dwc.Clue;
 
             /** For coloring **/
             // TBD
@@ -121,14 +142,13 @@ function display_grid() // display_grid(render_to = NULL)
             if (thisCell['background-shape']) {
                 div_class_array.push('circle');
             }
-            var across_number = ''; var down_number ='';
             var div_class = ' class="' + div_class_array.join(' ') + '"';
             grid_html += '<td' + td_class + ' onclick="toggle_theme(' + across_number + ',\'across\',\'' + render_to + '\');return false;" ';
             grid_html += 'oncontextmenu="toggle_theme(' + down_number + ',\'down\',\'' + render_to + '\');return false;">\n';
             grid_html += '  <div' + div_class + '>\n';
             grid_html += '    <div class="number">' + thisNumber + '</div>\n';
             grid_html += '    <div class="letter">' + sol_at_index + '</div>\n';
-            if (across_number != 0 && down_number != 0) {
+            if (across_number && down_number) {
                 grid_html += '    <span class="celltooltip">' + tooltip_text + '</span>\n';
             }
             grid_html += '  </div>\n';

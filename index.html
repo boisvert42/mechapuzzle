@@ -113,7 +113,7 @@
                         window.puzdata.clues.forEach(function(clues) {
                           var direction = clues.title;
                           clues.clue.forEach(function(clue) {
-                            var number = clue.word;
+                            var number = clue.number;
                             var clue1 = clue.text;
                             var entry = entry_mapping[number];
                             all_entries.push({'Number': number, 'Direction': direction, 'Clue': clue1, 'Entry': entry});
