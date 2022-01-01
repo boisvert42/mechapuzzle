@@ -76,19 +76,19 @@ function display_grid() // display_grid(render_to = NULL)
 
     var h = puzdata.metadata.height;
     var w = puzdata.metadata.width;
-    var sol = puzdata.get_solution_array();
-    var gn1 = puzdata.cells.map(x=>x.number || '');
+    var thisGrid = new xwGrid(puzdata.cells);
     var grid_html = '<table class="grid">\n';
     // for circles
     var background_shapes = puzdata.cells.map(x => x['background-shape']);
 
-    for (var i = 0; i < h; i++) {
+    for (var y = 0; y < h; y++) {
         grid_html += '<tr>';
-        for (var j = 0; j < w; j++) {
-            var grid_index = i * w + j;
-            var sol_at_index = sol[i][j] || '.';
+        for (var x = 0; x < w; x++) {
+            var thisCell = thisGrid.cellAt(x, y);
+            var sol_at_index = thisGrid.letterAt(x, y) || '.';
+            var thisNumber = thisCell.number || '';
             var td_class_arr = [];
-            var td_class = (sol_at_index == '.' ? ' class=black' : '');
+            var td_class = (thisGrid.isBlack(x, y) ? ' class=black' : '');
 
             /** For the tooltip **/
             // TBD for now
@@ -118,7 +118,7 @@ function display_grid() // display_grid(render_to = NULL)
              * Circled ones have an additional "circle" class
              **/
             var div_class_array = ['puzcell'];
-            if (background_shapes[grid_index]) {
+            if (thisCell['background-shape']) {
                 div_class_array.push('circle');
             }
             var across_number = ''; var down_number ='';
@@ -126,7 +126,7 @@ function display_grid() // display_grid(render_to = NULL)
             grid_html += '<td' + td_class + ' onclick="toggle_theme(' + across_number + ',\'across\',\'' + render_to + '\');return false;" ';
             grid_html += 'oncontextmenu="toggle_theme(' + down_number + ',\'down\',\'' + render_to + '\');return false;">\n';
             grid_html += '  <div' + div_class + '>\n';
-            grid_html += '    <div class="number">' + gn1[grid_index] + '</div>\n';
+            grid_html += '    <div class="number">' + thisNumber + '</div>\n';
             grid_html += '    <div class="letter">' + sol_at_index + '</div>\n';
             if (across_number != 0 && down_number != 0) {
                 grid_html += '    <span class="celltooltip">' + tooltip_text + '</span>\n';
