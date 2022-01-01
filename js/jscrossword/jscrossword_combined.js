@@ -62,7 +62,8 @@ function xw_read_ipuz(data) {
                 var number = cell_attributes.toString();
             }
             else {
-                var number = cell_attributes['cell'];
+                var number = cell_attributes['cell'] || EMPTY;
+                number = number.toString();
                 if (number === EMPTY) {number = null;}
             }
             if (number === EMPTY || number === BLOCK || number === 0) {
@@ -72,6 +73,12 @@ function xw_read_ipuz(data) {
             var solution = '';
             try {
                 solution = data['solution'][y][x];
+                if (solution.value) {
+                    solution = solution.value;
+                } else if (solution.cell) {
+                    solution = solution.cell;
+                }
+
             } catch {}
             // type
             var type = null;
@@ -144,17 +151,20 @@ function xw_read_ipuz(data) {
     word_id = 1;
     // Iterate through the titles of the clues
     var titles = Object.keys(data['clues']);
-    if (titles === ['Down', 'Across']) {titles = ['Across', 'Down'];}
+    // Change the order if it's down first (CrossFire export bug)
+    if (titles[0].toLowerCase() == 'down' && titles[1].toLowerCase() == 'across') {
+      titles = [titles[1], titles[0]];
+    }
     titles.forEach( function(title) {
         var thisClues = [];
         data['clues'][title].forEach( function (clue) {
             var number, text;
             // a "clue" can be an array or an object
             if (Array.isArray(clue)) {
-                number = clue[0];
+                number = clue[0].toString();
                 text = clue[1];
             } else {
-                number = clue.number;
+                number = clue.number.toString();
                 text = clue.clue;
             }
             thisClues.push({'word': word_id, 'number': number, 'text': text});
@@ -178,7 +188,7 @@ function xw_read_ipuz(data) {
     */
     // We only do this if we haven't already populated `words`
     if (!words.length) {
-        var thisGrid = new xwGrid(data['solution'], block=BLOCK);
+        var thisGrid = new xwGrid(cells);
         var word_id = 1;
         var acrossEntries = thisGrid.acrossEntries();
         Object.keys(acrossEntries).forEach(function(i) {
@@ -242,7 +252,7 @@ function xw_read_jpz(data1) {
     var ERR_PARSE_JPZ = 'Error parsing JPZ file.';
     // check if it's zipped
     var data;
-    if (data1.match(/^<\?xml/)) {
+    if (data1.match(/<\?xml/)) {
         data = data1;
     }
     else {
@@ -528,27 +538,55 @@ function xw_write_jpz(metadata, cells, words, clues) {
 * Class for a crossword grid
 **/
 class xwGrid {
-    constructor(soln_arr, block='.') {
-        this.solution = soln_arr;
-        this.block = block;
-        // width and height
-        this.height = soln_arr.length;
-        this.width = soln_arr[0].length;
-        // Grid numbering
+    constructor(cells) {
+        this.cells = cells;
+        this.height = Math.max.apply(null, cells.map(c => parseInt(c.y))) + 1;
+        this.width = Math.max.apply(null, cells.map(c => parseInt(c.x))) + 1;
         this.numbers = this.gridNumbering();
     }
-    isBlack(x, y) {
-        return this.solution[y][x] === this.block;
-    }
-    startAcrossWord(x, y) {
-        return (x === 0 || this.isBlack(x - 1, y)) && x < this.width - 1 && !this.isBlack(x, y) && !this.isBlack(x + 1, y);
-    }
-    startDownWord(x, y) {
-        return (y === 0 || this.isBlack(x, y - 1)) && y < this.height - 1 && !this.isBlack(x, y) && !this.isBlack(x, y + 1);
+    /* return the cell at (x,y) */
+    cellAt(x, y) {
+        return this.cells.find((cell) => (cell.x == x && cell.y == y));
     }
     letterAt(x, y) {
-        return this.solution[y][x];
+        return this.cellAt(x, y).solution;
     }
+    isBlack(x, y) {
+        var thisCell = this.cellAt(x, y);
+        return (thisCell.type == 'void' || thisCell.type == 'block');
+    }
+    /* check if we have a black square in a given direction */
+    hasBlack(x, y, dir) {
+        var mapping_dict = {
+          'right': {'xcheck': this.width-1, 'xoffset': 1, 'yoffset': 0, 'dir2': 'left'}
+        , 'left': {'xcheck': 0, 'xoffset': -1, 'yoffset': 0, 'dir2': 'right'}
+        , 'top': {'ycheck': 0, 'xoffset': 0, 'yoffset': -1, 'dir2': 'bottom'}
+        , 'bottom': {'ycheck': this.height-1, 'xoffset': 0, 'yoffset': 1, 'dir2': 'top'}
+        };
+        var md = mapping_dict[dir];
+        if (x === md['xcheck'] || y === md['ycheck']) {
+          return true;
+        }
+        else if (this.isBlack(x + md['xoffset'], y + md['yoffset'])) {
+          return true;
+        }
+        else if (this.cellAt(x, y)[dir + '-bar']) {
+          return true;
+        }
+        else if (this.cellAt(x + md['xoffset'], y + md['yoffset'])[md['dir2'] + '-bar']) {
+          return true;
+        }
+        return false;
+    }
+
+    // both startAcrossWord and startDownWord have to account for bars
+    startAcrossWord(x, y) {
+        return this.hasBlack(x, y, 'left') && x < this.width - 1 && !this.isBlack(x, y) && !this.hasBlack(x, y, 'right');
+    }
+    startDownWord(x, y) {
+        return this.hasBlack(x, y, 'top') && y < this.height - 1 && !this.isBlack(x, y) && !this.hasBlack(x, y, 'bottom');
+    }
+    // An array of grid numbers
     gridNumbering() {
         var numbers = [];
         var thisNumber = 1;
@@ -584,7 +622,7 @@ class xwGrid {
                     acrossEntries[thisNum]['cells'].push([x, y]);
                 }
                 // end the across entry if we hit the edge
-                if (x === this.width - 1) {
+                if (this.hasBlack(x, y, 'right')) {
                     thisNum = null;
                 }
             }
@@ -608,7 +646,7 @@ class xwGrid {
                     downEntries[thisNum]['cells'].push([x, y]);
                 }
                 // end the down entry if we hit the bottom
-                if (y === this.height - 1) {
+                if (this.hasBlack(x, y, 'bottom')) {
                     thisNum = null;
                 }
             }
@@ -708,6 +746,15 @@ class JSCrossword {
     * useful functions
     **/
 
+    /** set has_check and has_reveal as needed **/
+    set_check_reveal() {
+        var all_letters = new Set(this.cells.map(x=> x.solution));
+        if (all_letters.size <= 2) {
+            this.metadata.has_check = false;
+            this.metadata.has_reveal = false;
+        }
+    }
+
     /** Create a solution array **/
     create_solution_array() {
         // initialize an empty array given the width and height
@@ -780,18 +827,21 @@ class JSCrossword {
 
     /* try to determine the puzzle type */
     fromData(data) {
+        var js;
         try {
             var puzdata = PUZAPP.parsepuz(data);
-            return jscrossword_from_puz(puzdata);
+            js = jscrossword_from_puz(puzdata);
         } catch (error) {
             console.log(error);
             try {
-                return xw_read_jpz(data);
+                js = xw_read_jpz(data);
             } catch (error2) {
                 console.log(error2);
-                return xw_read_ipuz(data);
+                js = xw_read_ipuz(data);
             }
         }
+        js.set_check_reveal();
+        return js;
     }
 
     /**
