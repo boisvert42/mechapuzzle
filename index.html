@@ -28,8 +28,8 @@
 
 <body onload="init()">
 
-<p>Select a puzzle file to analyze.  If a .puz file it must be unlocked.</p>
-<input type="file" id="files" name="files" accept=".puz,.xml,.jpz,.xpz,.ipuz"/>
+<p>Select a puzzle file to analyze.  If the solution is restricted or locked the puzzle must be solved.</p>
+<input type="file" id="files" name="files" accept=".puz,.xml,.jpz,.xpz,.ipuz,.cfp"/>
 <br/><br/>
 <div id="metadata"></div>
 
@@ -107,17 +107,21 @@
                         window.puzdata = xw_constructor.fromData(contents);
                         // add "theme" to this
                         window.puzdata.theme = [d3.set(), d3.set()];
+                        // Because it may be a "solved" crossword, replace "solution" with "letter" if applicable
+                        window.puzdata.cells.forEach(function (cell) {
+                          cell.solution = cell.letter || cell.solution;
+                        });
                         // add the useful "all_entries" with Number / Direction / Clue / Entry
                         var all_entries = [];
-                        var entry_mapping = window.puzdata.get_entry_mapping();
-                        window.puzdata.clues.forEach(function(clues) {
-                          var direction = clues.title;
-                          clues.clue.forEach(function(clue) {
-                            var number = clue.number;
-                            var clue1 = clue.text;
-                            var entry = entry_mapping[number];
-                            all_entries.push({'Number': number, 'Direction': direction, 'Clue': clue1, 'Entry': entry});
-                          });
+                        const wordid_to_word = window.puzdata.get_entry_mapping();
+                        window.puzdata.clues.forEach(function(clue_list) {
+                            var direction = clue_list.title;
+                            clue_list.clue.forEach(function(my_clue) {
+                                var num = my_clue['number'];
+                                var clue = my_clue['text'];
+                                var entry = wordid_to_word[my_clue['word']];
+                                all_entries.push({'Number': num, 'Direction': direction, 'Clue': clue, 'Entry': entry});
+                            });
                         });
                         window.puzdata.all_entries = all_entries;
                         console.log(window.puzdata);

@@ -1,4 +1,126 @@
 /**
+* CFP (CrossFire) reading and writing functions
+**/
+
+/* parsexml function via https://stackoverflow.com/a/19448718 */
+function parseXml(e,r){let t=null;if(window.DOMParser)t=(new DOMParser).parseFromString(e,"text/xml");else{if(!window.ActiveXObject)throw new Error("cannot parse xml string!");if((t=new ActiveXObject("Microsoft.XMLDOM")).async=!1,!t.loadXML(e))throw t.parseError.reason+" "+t.parseError.srcText}function o(e,t){if("#text"==e.nodeName){let r=e.nodeValue;return void(r.trim()&&(t["#text"]=r))}let n={},a=t[e.nodeName];if(a?Array.isArray(a)?t[e.nodeName].push(n):t[e.nodeName]=[a,n]:r&&-1!=r.indexOf(e.nodeName)?t[e.nodeName]=[n]:t[e.nodeName]=n,e.attributes)for(let r of e.attributes)n[r.nodeName]=r.nodeValue;for(let r of e.childNodes)o(r,n)}let n={};for(let e of t.childNodes)o(e,n);return n}
+
+function xw_read_cfp(xml) {
+  // Read the XML into an object
+  var dataObj = parseXml(xml);
+  dataObj = dataObj.CROSSFIRE;
+  // Pull in the metadata
+  var grid_str = dataObj.GRID['#text'].trim();
+  var grid_arr = grid_str.split('\n');
+  var width = Number(dataObj.GRID.width);
+  var height = grid_arr.length
+  var metadata = {
+      'title': dataObj.TITLE['#text'] || '',
+      'author': dataObj.AUTHOR['#text'] || '',
+      'copyright': dataObj.COPYRIGHT['#text'] || '',
+      'description': dataObj.NOTES['#text'] || '',
+      'height': height,
+      'width': width,
+      'crossword_type': 'crossword',
+  };
+
+  /*
+  * `cells` is an array of cells with the various attributes
+    - x and y (0-indexed)
+    - "type" = 'block' if it's a block
+    - "number" = number if it's numbered
+    - "solution" = letter(s) that go in the box
+    - others: background-color (RGB), background-shape (circle),
+        bottom-bar, right-bar, top-bar, left-bar (= true if exist)
+  */
+  // Get circle locations if they exist
+  var circle_locations = new Set();
+  if (dataObj.CIRCLES) {
+    circle_locations = new Set(dataObj.CIRCLES['#text'].split(',').map(Number));
+  }
+  // Get rebus indicators if they exist
+  var rebusObj = {};
+  if (dataObj.REBUSES.REBUS) {
+    dataObj.REBUSES.REBUS.forEach( function(r) {
+      rebusObj[r.input] = r.letters.toUpperCase();
+    });
+  }
+  var cells = [];
+  for (var y=0; y < height; y++) {
+      for (var x=0; x < width; x++) {
+          // the grid index
+          var this_index = x + y * width;
+
+          // solution
+          var solution = grid_arr[y].charAt(x);
+          // replace with rebus if necessary
+          solution = rebusObj[solution] || solution;
+          // type
+          var type = null;
+          if (solution === '.') {
+              type = 'block';
+              solution = null;
+          }
+
+          // background shape and color
+          background_shape = null;
+          if (circle_locations.has(this_index)) {
+            background_shape = 'circle';
+          }
+
+          var new_cell = {
+              x: x,
+              y: y,
+              solution: solution,
+              number: null, // for now
+              type: type,
+              "background-shape": background_shape,
+          };
+          cells.push(new_cell);
+      } // end for x
+  } // end for y
+
+  // In order to add numbering to this we need a xwGrid object
+  var thisGrid = new xwGrid(cells);
+  var gn = thisGrid.gridNumbering();
+  cells.forEach(function(cell) {
+    var thisNumber = gn[cell.y][cell.x];
+    if (thisNumber) {
+      cell.number = thisNumber.toString();
+    }
+  });
+
+  /*
+  * `clues` is an array of (usually) two objects.
+     each object within has a "title" key whose value is generally "ACROSS" or "DOWN"
+     and a "clue" key, whose value is an array of clues.
+     Each "clue" key has
+       - a "text" value which is the actual clue
+       - a "word" which is the associated word ID
+       - an optional "number"
+  */
+  var words = [];
+  // Iterate through the titles of the clues
+  var entries = {'ACROSS': thisGrid.acrossEntries(), 'DOWN': thisGrid.downEntries()};
+  var clues1 = {'ACROSS': [], 'DOWN': []};
+  // clues and words are coupled in .cfp
+  dataObj.WORDS.WORD.forEach( function(w) {
+      var word_id = Number(w.id) + 1000; // we don't want an ID of 0
+      var number = w.num;
+      var text = w['#text'];
+      var thisDir = w.dir;
+      clues1[thisDir].push({'word': word_id, 'number': number, 'text': text});
+      var thisCells = entries[thisDir][Number(number)].cells;
+      words.push({'id': word_id, 'cells': thisCells});
+  });
+  var clues = [{'title': 'ACROSS', 'clue': clues1['ACROSS']}, {'title': 'DOWN', 'clue': clues1['DOWN']}];
+
+  return new JSCrossword(metadata, cells, words, clues);
+}
+
+function xw_write_cfp(metadata, cells, words, clues) {
+}
+/**
 * iPUZ reading/writing functions
 * copyright (c) 2021 Crossword Nexus
 * MIT License https://opensource.org/licenses/MIT
@@ -37,7 +159,8 @@ function xw_read_ipuz(data) {
         'description': data.intro || '',
         'height': height,
         'width': width,
-        'crossword_type': crossword_type
+        'crossword_type': crossword_type,
+        'fakeclues': data.fakeclues
     };
 
     /*
@@ -104,6 +227,11 @@ function xw_read_ipuz(data) {
             // background shape and color
             background_shape = style.shapebg;
             background_color = style.color;
+            // official iPuz style is RGB without a "#"
+            // we add that if it's missing
+            if (background_color && background_color.match('^[A-Fa-f0-9]{6}$')) {
+              background_color = '#' + background_color.toString();
+            }
             // top-right numbers
             var top_right_number = null;
             if (style.mark) {
@@ -281,8 +409,10 @@ function xw_read_jpz(data1) {
     var crossword, puzzle, jpz_metadata;
     puzzle = xmlDoc.getElementsByTagName('rectangular-puzzle');
     if (!puzzle.length) {
-        console.log(ERR_PARSE_JPZ);
-        return;
+        throw {
+          name: ERR_PARSE_JPZ,
+          message: 'Could not find puzzle data'
+        };
     }
 
     // determine the type of the crossword
@@ -300,8 +430,10 @@ function xw_read_jpz(data1) {
     // metadata
     jpz_metadata = puzzle[0].getElementsByTagName('metadata');
     if (!jpz_metadata.length) {
-        console.log('could not find metadata');
-        return;
+        throw {
+          name: ERR_PARSE_JPZ,
+          message: 'Could not find metadata'
+        };
     }
 
     var metadata = {'title': '', 'author': '', 'copyright': '', 'description': ''};
@@ -825,6 +957,12 @@ class JSCrossword {
         return xw_read_ipuz(data);
     }
 
+    /** CFP **/
+    // requires cfp_read_write.js
+    fromCFP(data) {
+        return xw_read_cfp(data);
+    }
+
     /* try to determine the puzzle type */
     fromData(data) {
         var js;
@@ -837,7 +975,12 @@ class JSCrossword {
                 js = xw_read_jpz(data);
             } catch (error2) {
                 console.log(error2);
-                js = xw_read_ipuz(data);
+                try {
+                  js = xw_read_ipuz(data);
+                } catch (error3) {
+                  console.log(error3);
+                  js = xw_read_cfp(data);
+                }
             }
         }
         js.set_check_reveal();
@@ -938,7 +1081,7 @@ var ActiveXObject, parsedPuz, filecontents, PUZAPP = {};
             return function(x) {return x;}
         }
         else {
-            return function(x) { return BinaryStringToUTF8String(x);}
+            return function(x) {return BinaryStringToUTF8String(x);}
         }
     }
 
@@ -1128,7 +1271,7 @@ var ActiveXObject, parsedPuz, filecontents, PUZAPP = {};
         retval.height = h;
         retval.nbrClues = nbrClues;
         retval.solution = string_convert(bytes.substring(52, 52 + wh));
-        retval.strings = string_convert(bytes.substring(strings_offset).split('\u0000', nbrClues + 4));
+        retval.strings = bytes.substring(strings_offset).split('\u0000', nbrClues + 4).map(string_convert);
         retval.grid = string_convert(bytes.substring(grid_offset, grid_offset + wh));
         // Replace "solution" with "grid" if the puzzle is filled
         if (retval.grid.indexOf('-') == -1)
@@ -1687,6 +1830,12 @@ function jscrossword_from_puz(puzdata) {
             else {
                 cell['solution'] = this_letter;
             }
+            // already filled-in letters
+            var this_fill = puzdata.grid.charAt(ix);
+            if (this_fill !== '-' && this_fill !== '.') {
+              cell['letter'] = this_fill;
+            }
+
             if (puzdata.sqNbrs[ix]) {
                 cell['number'] = puzdata.sqNbrs[ix];
             }
