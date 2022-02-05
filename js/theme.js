@@ -156,18 +156,31 @@ function getCluesPreOrPostfixedWith(clues, token, entries, type) {
     };
 }
 
+function extract_clues(puzdata, direction) {
+  return (puzdata.clues.find(data => data.title.toUpperCase() === direction) || {}).clue;
+}
+
+function get_entries(clues) {
+  return clues.map(data => data.word).map(i => puzdata.entry_mapping[i]);
+}
 
 function display_long_entries_and_common_substrings(puzdata, min_theme_len) {
     let retval = document.createElement('div');
     retval.className = 'indent';
     retval.id = 'long';
 
+    let across_clues = extract_clues(puzdata, 'ACROSS');
+    let across_entries = get_entries(across_clues);
+
+    let down_clues = extract_clues(puzdata, 'DOWN');
+    let down_entries = get_entries(down_clues);
+
     add_named_section(retval, '(across entries of length > ' + min_theme_len + ')',
-        display_one_directions_long_entries_and_their_common_substrings(puzdata.across_entries, puzdata.across_clues, min_theme_len),
+        display_one_directions_long_entries_and_their_common_substrings(across_entries, across_clues, min_theme_len),
         'indent', 'display: list-item;');
 
     add_named_section(retval, '(down entries of length > ' + min_theme_len + ')',
-        display_one_directions_long_entries_and_their_common_substrings(puzdata.down_entries, puzdata.down_clues, min_theme_len),
+        display_one_directions_long_entries_and_their_common_substrings(down_entries, down_clues, min_theme_len),
         'indent', 'display: list-item;');
 
     return retval;
