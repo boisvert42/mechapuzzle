@@ -176,11 +176,11 @@ function display_long_entries_and_common_substrings(puzdata, min_theme_len) {
     let down_entries = get_entries(down_clues);
 
     add_named_section(retval, '(across entries of length > ' + min_theme_len + ')',
-        display_one_directions_long_entries_and_their_common_substrings(across_entries, across_clues, min_theme_len),
+        display_one_directions_long_entries_and_their_common_substrings(across_entries, across_clues.map(clue => clue.text), min_theme_len),
         'indent', 'display: list-item;');
 
     add_named_section(retval, '(down entries of length > ' + min_theme_len + ')',
-        display_one_directions_long_entries_and_their_common_substrings(down_entries, down_clues, min_theme_len),
+        display_one_directions_long_entries_and_their_common_substrings(down_entries, down_clues.map(clue => clue.text), min_theme_len),
         'indent', 'display: list-item;');
 
     return retval;
