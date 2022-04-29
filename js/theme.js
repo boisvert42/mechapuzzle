@@ -143,10 +143,10 @@ function getCluesPreOrPostfixedWith(clues, token, entries, type) {
     for (let i in clues) {
       var clue_num = clues[i].number;
       var clue_text = clues[i].text;
-      var clue_entry = entries[clue_num];
+      var clue_entry = entries[Number(i)+1]; /* dictionary is 1-based */
       if (clue_text.startsWith(token) || clue_text.endsWith(token)) {
         retClues.push(clue_num + type + ' [' + clue_text + ']');
-        retEntries.push(entries[clue_num]);
+        retEntries.push(clue_entry);
       }
     }
 
