@@ -4,6 +4,7 @@ function render_clues() {
     document.getElementById(clues_render_to).innerHTML = '';
     clue_initial_letters();
     clue_lengths();
+    clue_list();
 }
 
 function isLetter(str) {
@@ -115,4 +116,31 @@ function clue_lengths() {
         },
     });
     CHARTS['clues'].push(chart);
+}
+
+function clue_list() {
+    const puzdata = window.puzdata;
+    const entries = puzdata.all_entries;
+    var html =
+        "<style> .clue-item { display: flex; justify-content: space-between; max-width: 500px; } </style>\n\n";
+
+    const acrossEntries = entries
+        .filter((entry) => entry.Direction === "ACROSS")
+        .sort((a, b) => parseInt(a.number) - parseInt(b.number));
+    const downEntries = entries
+        .filter((entry) => entry.Direction === "DOWN")
+        .sort((a, b) => parseInt(a.number) - parseInt(b.number));
+
+    const displayTemplate = (entry) =>
+        `<div class="clue-item"><span><strong>${entry.Number}.</strong> ${entry.Clue} </span><span><em>${entry.Entry}</em></span></div>`;
+
+    html += "<h3>ACROSS</h3>";
+    for (var entry of acrossEntries) {
+        html += displayTemplate(entry);
+    }
+    html += "<br /><h3>DOWN</h3>";
+    for (var entry of downEntries) {
+        html += displayTemplate(entry);
+    }
+    document.getElementById("clues1").innerHTML = html;
 }
