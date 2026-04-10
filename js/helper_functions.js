@@ -1,4 +1,5 @@
 function render_all() {
+    clear_all_output_divs();
     render_metadata();
     render_grid();
     render_theme();
@@ -7,6 +8,21 @@ function render_all() {
 
     // This is just to show the raw data for development purposes
     document.getElementById('rawdata_js').innerHTML = JSON.stringify(window.puzdata, null, ' ');
+}
+
+function clear_all_output_divs() {
+    const containers = [
+        'metadata',
+        'grid_js', 'grid0', 'grid1', 'grid2',
+        'theme_js', 'theme0', 'theme1', 'theme2',
+        'clues_js', 'clues0', 'clues1', 'clues2',
+        'entries_js', 'entries0', 'entries1', 'entries2',
+        'rawdata_js'
+    ];
+    containers.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.innerHTML = '';
+    });
 }
 
 function render_metadata() {

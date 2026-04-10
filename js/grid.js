@@ -28,6 +28,10 @@ function width_height() {
 }
 
 function symmetry() {
+    /**
+     * Checks for 180-degree rotational symmetry.
+     * Compares each cell with its counterpart from the opposite side of the grid.
+     */
     var puzdata = window.puzdata;
     var sol = '';
     puzdata.cells.forEach(function(x) {
@@ -55,7 +59,7 @@ function toggle_theme(grid_num, dir, render_to) {
     var dir_index = (dir == 'across') ? 0 : 1;
     var dir_theme_entries = puzdata.theme[dir_index];
     if (dir_theme_entries.has(grid_num)) {
-        dir_theme_entries.remove(grid_num);
+        dir_theme_entries.delete(grid_num);
     }
     else {
         dir_theme_entries.add(grid_num);
@@ -89,7 +93,9 @@ function display_grid() // display_grid(render_to = NULL)
         var wd = acrossEntries[num];
         var clue = puzdata.all_entries.find((entry) => (entry.Number == num && entry.Direction.toLowerCase() == 'across'));
         if (clue) {
-            wd.cells.forEach(x => acrossWordClues[x] = clue);
+            wd.cells.forEach(function(cell_coords) {
+              acrossWordClues[cell_coords] = clue;
+            });
         }
     });
 
@@ -98,7 +104,9 @@ function display_grid() // display_grid(render_to = NULL)
         var wd = downEntries[num];
         var clue = puzdata.all_entries.find((entry) => (entry.Number == num && entry.Direction.toLowerCase() == 'down'));
         if (clue) {
-            wd.cells.forEach(x => downWordClues[x] = clue);
+            wd.cells.forEach(function(cell_coords) {
+              downWordClues[cell_coords] = clue;
+            });
         }
     });
     //console.log(downWordClues);
@@ -110,28 +118,26 @@ function display_grid() // display_grid(render_to = NULL)
             var sol_at_index = thisGrid.letterAt(x, y) || '.';
             var thisNumber = thisCell.number || '';
             var td_class_arr = [];
-            var td_class = (thisGrid.isBlack(x, y) ? ' class=black' : '');
+            var td_class = (thisGrid.isBlack(x, y) ? ' class="black"' : '');
 
-            var awc = acrossWordClues[[x, y]] || {};
-            var dwc = downWordClues[[x, y]] || {};
+            var cell_key = x + ',' + y;
+            var awc = acrossWordClues[cell_key] || {};
+            var dwc = downWordClues[cell_key] || {};
             var across_number = awc.Number || '';
             var down_number = dwc.Number || '';
 
             /** For the tooltip **/
-            var tooltip_text = across_number + 'A: ' + awc.Clue;
-            tooltip_text += '<br />';
-            tooltip_text += down_number + 'D: ' + dwc.Clue;
+            var tooltip_text = (across_number ? across_number + 'A: ' + awc.Clue : '');
+            if (across_number && down_number) tooltip_text += '<br />';
+            tooltip_text += (down_number ? down_number + 'D: ' + dwc.Clue : '');
 
             /** For coloring **/
-            // TBD
-            /*
             if (puzdata.theme[0].has(across_number) || puzdata.theme[1].has(down_number)) {
-                td_class = ' class=theme';
+                td_class = ' class="theme"';
             }
-            */
 
             if (highlighted_letters[sol_at_index]) {
-                td_class = ' class=highlighted';
+                td_class = ' class="highlighted"';
             }
 
             /**
@@ -148,7 +154,7 @@ function display_grid() // display_grid(render_to = NULL)
             grid_html += '  <div' + div_class + '>\n';
             grid_html += '    <div class="number">' + thisNumber + '</div>\n';
             grid_html += '    <div class="letter">' + sol_at_index + '</div>\n';
-            if (across_number && down_number) {
+            if (across_number || down_number) {
                 grid_html += '    <span class="celltooltip">' + tooltip_text + '</span>\n';
             }
             grid_html += '  </div>\n';
@@ -171,7 +177,7 @@ function letter_frequency() {
     // Container for letter counts
     var letter_counts = [];
     for (var i = 0; i < 26; i++) {
-        letter_counts[i] = 0.0;
+        letter_counts[i] = 0;
     }
     var total_letters = 0;
     for (i = 0; i < sol.length; i++) {
@@ -181,11 +187,6 @@ function letter_frequency() {
             letter_counts[num] += 1;
             total_letters += 1;
         }
-    }
-    // Divide by total_letters
-    var letter_freq = [];
-    for (i = 0; i < 26; i++) {
-        letter_freq[i] = 100 * letter_counts[i] / total_letters;
     }
 
     // Array of letters
@@ -200,37 +201,51 @@ function letter_frequency() {
         standard_counts[i] = Math.round(total_letters * standard_letter_distribution[i] / 100);
     }
 
-    // Add titles to counts
-    standard_counts.unshift('Typical puzzle');
-    letter_counts.unshift('This puzzle');
-    var plot_data = [standard_counts, letter_counts];
-
     function highlight_letter(x) {
         highlighted_letters[ALPHABET.charAt(x)] = 1 - highlighted_letters[ALPHABET.charAt(x)];
         display_grid(grid_render_to);
     }
 
     // Now plot!
-    var chart = c3.generate({
-        bindto: '#grid0',
-        title: {
-            text: 'Letter counts (click a bar to highlight in the grid)'
-        },
+    const ctx = document.getElementById('grid0');
+    ctx.innerHTML = '<canvas id="gridChart"></canvas>';
+    const chart = new Chart(document.getElementById('gridChart'), {
+        type: 'bar',
         data: {
-            columns: plot_data,
-            type: 'bar',
-            labels: true,
-            onclick: function (e) { highlight_letter(e.x); }
+            labels: letters,
+            datasets: [
+                {
+                    label: 'This puzzle',
+                    data: letter_counts,
+                    backgroundColor: 'rgba(52, 152, 219, 0.7)',
+                    borderColor: 'rgba(52, 152, 219, 1)',
+                    borderWidth: 1
+                },
+                {
+                    label: 'Typical puzzle',
+                    data: standard_counts,
+                    backgroundColor: 'rgba(189, 195, 199, 0.5)',
+                    borderColor: 'rgba(189, 195, 199, 1)',
+                    borderWidth: 1
+                }
+            ]
         },
-        axis: {
-            x: {
-                type: 'category',
-                categories: letters
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Letter counts (click a bar to highlight in the grid)'
+                }
             },
-            y: {
-                label: 'Count'
+            onClick: (e, activeEls) => {
+                if (activeEls.length > 0) {
+                    const index = activeEls[0].index;
+                    highlight_letter(index);
+                }
             }
         }
     });
-    CHARTS['grid'].push(chart);
+    // CHARTS['grid'].push(chart);
 }

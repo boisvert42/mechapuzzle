@@ -1,142 +1,89 @@
+:root {
+    --primary-color: #2c3e50;
+    --secondary-color: #34495e;
+    --accent-color: #3498db;
+    --background-color: #f8f9fa;
+    --text-color: #333;
+    --border-color: #dee2e6;
+    --tab-bg: #e9ecef;
+    --tab-active-bg: #fff;
+}
+
+/* Base Styles */
 body {
-    font-size: 80%;
-    font-family: 'Lucida Grande', Verdana, Arial, sans-serif;
-}
-
-ul#tabs {
-    list-style-type: none;
-    margin: 30px 0 0 0;
-    padding: 0 0 0.3em 0;
-}
-
-ul#tabs li {
-    display: inline
-}
-
-ul#tabs li a {
-    color: #42454a;
-    background-color: #dedbde;
-    border: 1px solid #c9c3ba;
-    border-bottom: none;
-    padding: 0.3em;
-    text-decoration: none;
-}
-
-ul#tabs li a:hover {
-    background-color: #f1f0ee
-}
-
-ul#tabs li a.selected {
-    color: #000;
-    background-color: #f1f0ee;
-    font-weight: bold;
-    padding: 0.7em 0.3em 0.38em 0.3em;
-}
-
-div.tabContent {
-    border: 1px solid #c9c3ba;
-    padding: 0.5em;
-    background-color: #f1f0ee;
-}
-
-div.tabContent.hide {
-    display: none
-}
-
-/** Grid tables **/
-table.grid {
-    border: 1px solid black;
-    border-collapse: collapse;
-    border-spacing: 0;
-}
-
-table.grid td {
-    width: 24px;
-    height: 24px;
-    padding: 0;
+    font-size: 16px;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    line-height: 1.5;
+    color: var(--text-color);
+    background-color: var(--background-color);
     margin: 0;
-    border: 1px solid black;
+    padding: 20px;
+}
+
+/* Layout Components */
+.container {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+header {
     text-align: center;
-    vertical-align: top;
-    background-color: #EEEEEE;
-    font-family: 'Lucida Grande', Verdana, Arial, sans-serif;
+    margin-bottom: 15px;
 }
 
-table.grid td.black {
-    background-color: black;
-}
+/* ... existing code ... */
 
-table.grid td.theme {
-    background-color: yellow;
-}
-
-table.grid td.highlighted {
-    background-color: aqua;
-}
-
-table.grid div.puzcell:hover .celltooltip {
-    display: block;
-}
-
-.celltooltip {
-    display: none;
-    background: gray;
-    color: white;
-    text-align: left;
-    padding: 10px;
-    position: absolute;
-    z-index: 1000;
-    max-width: 250px;
-    opacity: 0.9;
-}
-
-table.grid div.circle {
-    border: 1px solid #333;
-    border-radius: 50%;
-
-    width: 100%;
-    height: 100%;
-
-    -moz-box-sizing: border-box;
-    box-sizing: border-box;
-}
-
-table.grid div.letter {
-    height: 12px;
-    width: 50%;
-    margin: auto;
-}
-
-table.grid div.number {
-    left: 0;
-    top: 0;
-    height: 6px;
-    text-align: left;
-    font-size: 8px;
-    padding-top: 0;
+header h1 {
     margin: 0;
+    font-size: 1.5rem;
 }
 
-.items {
-    display: table;
-    table-layout: fixed;
+header p {
+    margin: 5px 0;
+    font-size: 0.9rem;
+    color: var(--secondary-color);
 }
 
-.items span {
-    display: table-cell;
-    text-align: left;
-    border: 0;
+#drag-drop-zone {
+    border: 2px dashed var(--accent-color);
+    padding: 20px;
+    text-align: center;
+    background: rgba(52, 152, 219, 0.05);
+    border-radius: 12px;
+    margin-bottom: 15px;
+    transition: all 0.3s ease;
 }
 
-
-.hilight {
-    background: #cccccc;
+#drag-drop-zone p {
+    margin: 0 0 10px 0;
+    font-size: 0.9rem;
 }
 
-.indent {
-    margin-left: 15px;
+.btn {
+    background-color: var(--accent-color);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
 }
 
-mark {
-    background: #33cc99;
+.btn:hover {
+    background-color: #2980b9;
+}
+
+/** Chart Container Heights **/
+.chart-container-large {
+    height: 400px;
+    position: relative;
+    margin-bottom: 20px;
+}
+
+.chart-container-small {
+    height: 250px;
+    max-width: 400px;
+    position: relative;
+    margin-bottom: 20px;
 }
