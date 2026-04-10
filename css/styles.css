@@ -20,6 +20,11 @@ body {
     padding: 20px;
 }
 
+h2 {
+    color: var(--primary-color);
+    margin-top: 0;
+}
+
 /* Layout Components */
 .container {
     max-width: 1000px;
@@ -30,8 +35,6 @@ header {
     text-align: center;
     margin-bottom: 15px;
 }
-
-/* ... existing code ... */
 
 header h1 {
     margin: 0;
@@ -44,6 +47,66 @@ header p {
     color: var(--secondary-color);
 }
 
+#metadata {
+    margin-bottom: 20px;
+    padding: 15px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+/* Tab Navigation */
+ul#tabs {
+    list-style-type: none;
+    margin: 20px 0 0 0;
+    padding: 0;
+    display: flex;
+    border-bottom: 2px solid var(--border-color);
+}
+
+ul#tabs li {
+    margin-right: 5px;
+}
+
+ul#tabs li a {
+    display: block;
+    color: var(--secondary-color);
+    background-color: var(--tab-bg);
+    padding: 10px 20px;
+    text-decoration: none;
+    border-radius: 8px 8px 0 0;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+    border-bottom: none;
+}
+
+ul#tabs li a:hover {
+    background-color: #dee2e6;
+}
+
+ul#tabs li a.selected {
+    color: var(--accent-color);
+    background-color: var(--tab-active-bg);
+    font-weight: 600;
+    border-color: var(--border-color);
+    margin-bottom: -2px;
+    border-bottom: 2px solid var(--tab-active-bg);
+}
+
+div.tabContent {
+    background-color: #fff;
+    border: 1px solid var(--border-color);
+    border-top: none;
+    padding: 25px;
+    border-radius: 0 0 8px 8px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+}
+
+div.tabContent.hide {
+    display: none;
+}
+
+/* File Upload & Drag-Drop */
 #drag-drop-zone {
     border: 2px dashed var(--accent-color);
     padding: 20px;
@@ -52,6 +115,11 @@ header p {
     border-radius: 12px;
     margin-bottom: 15px;
     transition: all 0.3s ease;
+}
+
+#drag-drop-zone.dragover {
+    background: rgba(52, 152, 219, 0.15);
+    transform: scale(1.01);
 }
 
 #drag-drop-zone p {
@@ -74,7 +142,109 @@ header p {
     background-color: #2980b9;
 }
 
-/** Chart Container Heights **/
+/* Crossword Grid Styles */
+table.grid {
+    border-collapse: collapse;
+    margin: 20px 0;
+    box-shadow: 0 0 20px rgba(0,0,0,0.1);
+}
+
+table.grid td {
+    width: 22px;
+    height: 22px;
+    padding: 0;
+    margin: 0;
+    border: 1px solid #999;
+    text-align: center;
+    vertical-align: middle;
+    background-color: #fff;
+    position: relative;
+}
+
+table.grid td.black {
+    background-color: #2c3e50;
+}
+
+table.grid td.theme {
+    background-color: #fff3cd;
+}
+
+table.grid td.highlighted {
+    background-color: #d1ecf1;
+}
+
+.celltooltip {
+    display: none;
+    background: rgba(44, 62, 80, 0.95);
+    color: white;
+    text-align: left;
+    padding: 12px;
+    position: absolute;
+    z-index: 1000;
+    max-width: 250px;
+    border-radius: 6px;
+    font-size: 14px;
+    pointer-events: none;
+}
+
+table.grid div.puzcell:hover .celltooltip {
+    display: block;
+}
+
+table.grid div.circle {
+    border: 1px solid #333;
+    border-radius: 50%;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+}
+
+table.grid div.letter {
+    font-size: 14px;
+    font-weight: 500;
+}
+
+table.grid div.number {
+    position: absolute;
+    left: 1px;
+    top: 1px;
+    font-size: 8px;
+    color: #666;
+    line-height: 1;
+}
+
+/* List & Text Styles */
+.items {
+    display: table;
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 5px;
+}
+
+.items span {
+    display: table-cell;
+    padding: 8px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.hilight {
+    background: #f1f3f5;
+}
+
+.indent {
+    margin-left: 20px;
+}
+
+mark {
+    background: #c3e6cb;
+    padding: 2px 4px;
+    border-radius: 4px;
+}
+
+/* Data Visualization Containers */
 .chart-container-large {
     height: 400px;
     position: relative;
