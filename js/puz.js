@@ -389,7 +389,7 @@ var ActiveXObject, parsedPuz, filecontents, PUZAPP = {};
 		}
 		retval.all_entries = all_entries;
 		
-        retval.theme = [d3.set(), d3.set()];
+        retval.theme = [new Set(), new Set()];
 
         PUZAPP.puzdata = retval;
 

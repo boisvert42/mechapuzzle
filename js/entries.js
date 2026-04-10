@@ -40,9 +40,9 @@ function entry_lengths()
 {
     // Display the number of entries for each length
     var puzdata = window.puzdata;
-    var categories = d3.range(1, d3.max([puzdata.metadata.width, puzdata.metadata.height]) + 1);
+    var maxDim = Math.max(puzdata.metadata.width, puzdata.metadata.height);
+    var categories = Array.from({length: maxDim}, (_, i) => i + 1);
     var data = [];
-    var clues;
     var entries_by_count = {};
     // Initialize the data
     for (var i = 0; i < categories.length; i++)
@@ -70,37 +70,42 @@ function entry_lengths()
       }
       entries_by_count[entry_length].push([entry, clue_mapping[word_num]]);
     });
-    data.unshift('Count');
-    // Plot
-    var chart = c3.generate({
-        bindto: '#entries0',
-        title: {
-            text: 'Entry length'
-        },
-        data: {
-            columns: [data],
-            type: 'bar',
-            labels: true,
-            onclick: function (e) {entries_of_length(e.index+1, 'Number'); }
-        },
-        size: {
-            // Chart won't render unless we initialize the size up front
-            width: 340
-        },
-        tooltip: {
-            show: false
-        },
-        axis: {
-            rotated: true,
-            x: {
-                type: 'category',
-                categories: categories
-            },
-            y: {
-                label: 'Count'
-            }
-        },
 
+    // Plot
+    const ctx = document.getElementById('entries0');
+    ctx.innerHTML = '<canvas id="entriesChart"></canvas>';
+    const chart = new Chart(document.getElementById('entriesChart'), {
+        type: 'bar',
+        data: {
+            labels: categories,
+            datasets: [{
+                label: 'Count',
+                data: data,
+                backgroundColor: 'rgba(52, 152, 219, 0.7)',
+                borderColor: 'rgba(52, 152, 219, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            indexAxis: 'y',
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Entry length'
+                },
+                legend: {
+                    display: false
+                }
+            },
+            onClick: (e, activeEls) => {
+                if (activeEls.length > 0) {
+                    const index = activeEls[0].index;
+                    entries_of_length(index + 1, 'Number');
+                }
+            }
+        }
     });
-    CHARTS['entries'].push(chart);
+    // CHARTS['entries'].push(chart);
 }

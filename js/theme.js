@@ -4,6 +4,7 @@ const potential_theme_entries_div = 'theme0';
 function render_theme() {
     display_grid(render_to_theme);
 
+    document.getElementById(potential_theme_entries_div).innerHTML = '';
     let min_theme_len = 9; // TODO?: allow user to pick?
     let list_of_lists_of_potential_theme_entries = document.createElement('div');
 

@@ -58,28 +58,32 @@ function clue_initial_letters() {
 }
 
 function clue_lengths() {
-    // Display the number of clues for each length
+    /**
+     * Aggregates clue lengths (by word count) and renders a horizontal bar chart.
+     * Clicking a bar filters the detailed clue list to that specific length.
+     */
     var puzdata = window.puzdata;
     var clue_lists = puzdata.clues;
     var categories = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '>= 10'];
     var data = [];
-	  var clues_by_count = {};
-    // Initialize the data
+	var clues_by_count = {};
+    
+    // Initialize buckets
     for (var i = 0; i < categories.length; i++) {
         data.push(0);
     }
+    
     var entry_mapper = puzdata.get_entry_mapping();
     for (var j = 0; j < clue_lists.length; j++) {
         var clues = clue_lists[j].clue;
         clues.forEach(function(x) {
-          // find the length of the clue
           var clue_text = x.text;
           var clue_length = clue_text.split(' ').length;
           if (clue_length >= 10)
               clue_length = 10;
-          // Push to "data"
+          
           data[clue_length - 1] += 1;
-          // Push to "clues_by_count"
+          
           if (!clues_by_count[clue_length]) {
             clues_by_count[clue_length] = [];
           }
@@ -87,35 +91,42 @@ function clue_lengths() {
         });
     }
 
-    data.unshift('Count');
-    // Plot
-    var chart = c3.generate({
-        bindto: '#clues0',
-        title: {
-            text: 'Clue length (number of words)'
-        },
+    // Chart.js Horizontal Bar Chart
+    const ctx = document.getElementById('clues0');
+    ctx.innerHTML = '<canvas id="cluesChart"></canvas>';
+    const chart = new Chart(document.getElementById('cluesChart'), {
+        type: 'bar',
         data: {
-            columns: [data],
-            type: 'bar',
-            labels: true,
-			onclick: function (e) { clues_of_length(e.index + 1, 'Number'); }
+            labels: categories,
+            datasets: [{
+                label: 'Count',
+                data: data,
+                backgroundColor: 'rgba(52, 152, 219, 0.7)',
+                borderColor: 'rgba(52, 152, 219, 1)',
+                borderWidth: 1
+            }]
         },
-        size: {
-            // Chart won't render unless we initialize the size up front
-            width: 340
-        },
-        axis: {
-            rotated: true,
-            x: {
-                type: 'category',
-                categories: categories
+        options: {
+            indexAxis: 'y', // Makes it a horizontal bar chart
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Clue length (number of words)'
+                },
+                legend: {
+                    display: false
+                }
             },
-            y: {
-                label: 'Count'
+            onClick: (e, activeEls) => {
+                if (activeEls.length > 0) {
+                    const index = activeEls[0].index;
+                    clues_of_length(index + 1, 'Number');
+                }
             }
-        },
+        }
     });
-    CHARTS['clues'].push(chart);
 }
 
 function clue_list() {
