@@ -80,7 +80,7 @@ function display_grid() // display_grid(render_to = NULL)
 
     var h = puzdata.metadata.height;
     var w = puzdata.metadata.width;
-    var thisGrid = new xwGrid(puzdata.cells);
+    var thisGrid = puzdata.grid();
     var grid_html = '<table class="grid">\n';
     // for circles
     var background_shapes = puzdata.cells.map(x => x['background-shape']);
