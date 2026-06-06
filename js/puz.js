@@ -229,7 +229,7 @@ var ActiveXObject, parsedPuz, filecontents, PUZAPP = {};
         retval.strings = bytes.substring(strings_offset).split('\u0000', nbrClues + 4);
         retval.grid = bytes.substring(grid_offset, grid_offset + wh);
         // Replace "solution" with "grid" if the puzzle is filled
-        if (retval.grid.indexOf('-') == -1) {
+        if (retval.grid.indexOf('-') === -1) {
             retval.solution = retval.grid;
         }
         cksum = cksum_region(bytes, grid_offset, wh, cksum);
@@ -300,7 +300,7 @@ var ActiveXObject, parsedPuz, filecontents, PUZAPP = {};
                 sdw = retval.startDownWord(x, y);
                 saw = retval.startAcrossWord(x, y);
                 isBlack = retval.isBlack(x, y);
-                var this_index = retval.toIndex(x, y);
+                let this_index = retval.toIndex(x, y);
                 if (saw) {
                     // Start of an across entry
                     // Grab the number
@@ -338,7 +338,7 @@ var ActiveXObject, parsedPuz, filecontents, PUZAPP = {};
             for (y = 0; y < h; y++) {
                 sdw = retval.startDownWord(x, y);
                 isBlack = retval.isBlack(x, y);
-                var this_index = retval.toIndex(x, y);
+                let this_index = retval.toIndex(x, y);
                 if (sdw) {
                     down_clue_number = downWordNbrs[this_index];
                     // Start the entry
@@ -397,7 +397,7 @@ var ActiveXObject, parsedPuz, filecontents, PUZAPP = {};
     }
 
     function is_in_array(arr, obj) {
-        return (arr.indexOf(obj) != -1);
+        return (arr.indexOf(obj) !== -1);
     }
 
     function puzdata(filecontents) {

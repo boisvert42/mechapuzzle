@@ -66,7 +66,7 @@ function create_twisty(parent, toggleName, toggledId) {
 function swap_label(item, toggled, untoggled) {
     "use strict";
     let textNode = item.childNodes[0];
-    if (textNode == toggled) {
+    if (textNode === toggled) {
         item.replaceChild(untoggled, item.childNodes[0]);
     } else {
         item.replaceChild(toggled, item.childNodes[0]);
@@ -75,10 +75,10 @@ function swap_label(item, toggled, untoggled) {
 
 function add_named_section(all_items, heading, addedElements, classToAdd, styleToApply) {
     let heading_item = document.createElement('div');
-    if (!(typeof classToAdd === 'undefined') || !(classToAdd == null)) {
+    if (!(typeof classToAdd === 'undefined') || !(classToAdd === null)) {
         heading_item.className = classToAdd;
     }
-    if (!(typeof styleToApply === 'undefined') || !(styleToApply == null)) {
+    if (!(typeof styleToApply === 'undefined') || !(styleToApply === null)) {
         heading_item.style = styleToApply;
     }
     heading_item.appendChild(document.createTextNode(heading));
@@ -99,7 +99,7 @@ function display_starred_clues(puzdata) {
 
     let starred_clues = starred_across.clues.concat(starred_down.clues);
 
-    if (starred_clues.length == 0) {
+    if (starred_clues.length === 0) {
         let empty_item = document.createElement('div');
         let newChild = document.createTextNode('<none>');
         empty_item.appendChild(newChild);
@@ -188,7 +188,7 @@ function display_one_directions_long_entries_and_their_common_substrings(entries
     retval.className = 'items indent';
 
     let indices_of_potential_theme_entries = getIndicesOfStringsOfAtLeastMinLength(entries, min_theme_len);
-    if (indices_of_potential_theme_entries.length == 0) {
+    if (indices_of_potential_theme_entries.length === 0) {
         let item = document.createElement('div');
         item.className = 'indent';
         let newChild = document.createTextNode('<none>');
@@ -287,7 +287,7 @@ function longestCommonSubstringsFromMultipleStrings() {
             if (substring.length < maxCommonSubstringLen) {
                 continue;
             }
-            if (substringToSourcesMap[substring].length == arguments.length) {
+            if (substringToSourcesMap[substring].length === arguments.length) {
                 if (substring.length > maxCommonSubstringLen) {
                     maxCommonSubstringLen = substring.length;
                     retval = [];
@@ -307,7 +307,7 @@ function addKeyValuePairToMultimap(multimap, key, value) {
         multimap[key] = [];
     }
 
-    if (multimap[key].indexOf(value) == -1) { // TODO: better way to do this?
+    if (multimap[key].indexOf(value) === -1) { // TODO: better way to do this?
         multimap[key].push(value);
     }
 }
@@ -317,7 +317,7 @@ function addKeyValuePairToMultimap(multimap, key, value) {
 function toggleById(id) {
     "use strict";
     let element = document.getElementById(id);
-    if (!(typeof element === 'undefined') || !(element == null)) {
+    if (!(typeof element === 'undefined') || !(element === null)) {
         let s = element.style;
         flipDisplay(s);
     }
@@ -327,7 +327,7 @@ function toggleById(id) {
 function toggleByClass(classTag) {
     "use strict";
     let elements = document.getElementsByClassName(classTag);
-    if (!(typeof elements === 'undefined') || !(element == null)) {
+    if (!(typeof elements === 'undefined') || !(element === null)) {
         for (let i = 0; i < elements.length; ++i) {
             let s = elements[i].style;
             flipDisplay(s)

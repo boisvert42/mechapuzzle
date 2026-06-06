@@ -18,7 +18,7 @@ function width_height() {
     var puzdata = window.puzdata;
     var width_height = puzdata.metadata.width + 'x' + puzdata.metadata.height;
     var is_unusual_size = false;
-    if (puzdata.metadata.width != 15 || puzdata.metadata.height != 15) {
+    if (puzdata.metadata.width !== 15 || puzdata.metadata.height !== 15) {
         is_unusual_size = true;
     }
     if (is_unusual_size) {
@@ -35,13 +35,13 @@ function symmetry() {
     var puzdata = window.puzdata;
     var sol = '';
     puzdata.cells.forEach(function(x) {
-      if (x.type == 'block') {sol += '.';}
+      if (x.type === 'block') {sol += '.';}
       else {sol += x.solution;}
     });
     var sol_length = sol.length;
     var is_symmetric = true;
     for (var i = 0; i < sol_length / 2; i++) {
-        if ((sol.charAt(i) == '.' && sol.charAt(sol_length - 1 - i) != '.') || (sol.charAt(i) != '.' && sol.charAt(sol_length - 1 - i) == '.')) {
+        if ((sol.charAt(i) === '.' && sol.charAt(sol_length - 1 - i) !== '.') || (sol.charAt(i) !== '.' && sol.charAt(sol_length - 1 - i) === '.')) {
             is_symmetric = false;
             break;
         }
@@ -56,7 +56,7 @@ function symmetry() {
 /* toggle theme status of an entry */
 function toggle_theme(grid_num, dir, render_to) {
     var puzdata = window.puzdata;
-    var dir_index = (dir == 'across') ? 0 : 1;
+    var dir_index = (dir === 'across') ? 0 : 1;
     var dir_theme_entries = puzdata.theme[dir_index];
     if (dir_theme_entries.has(grid_num)) {
         dir_theme_entries.delete(grid_num);
@@ -91,7 +91,7 @@ function display_grid() // display_grid(render_to = NULL)
     var downEntries = thisGrid.downEntries();
     Object.keys(acrossEntries).forEach(function(num) {
         var wd = acrossEntries[num];
-        var clue = puzdata.all_entries.find((entry) => (entry.Number == num && entry.Direction.toLowerCase() == 'across'));
+        var clue = puzdata.all_entries.find((entry) => (entry.Number === Number(num) && entry.Direction.toLowerCase() === 'across'));
         if (clue) {
             wd.cells.forEach(function(cell_coords) {
               acrossWordClues[cell_coords] = clue;
@@ -102,7 +102,7 @@ function display_grid() // display_grid(render_to = NULL)
     //console.log(downEntries);
     Object.keys(downEntries).forEach(function(num) {
         var wd = downEntries[num];
-        var clue = puzdata.all_entries.find((entry) => (entry.Number == num && entry.Direction.toLowerCase() == 'down'));
+        var clue = puzdata.all_entries.find((entry) => (entry.Number === Number(num) && entry.Direction.toLowerCase() === 'down'));
         if (clue) {
             wd.cells.forEach(function(cell_coords) {
               downWordClues[cell_coords] = clue;
@@ -171,7 +171,7 @@ function letter_frequency() {
     var puzdata = window.puzdata;
     var sol = '';
     puzdata.cells.forEach(function(x) {
-      if (x.type == 'block') {sol += '.';}
+      if (x.type === 'block') {sol += '.';}
       else {sol += x.solution;}
     });
     // Container for letter counts
@@ -182,7 +182,7 @@ function letter_frequency() {
     var total_letters = 0;
     for (i = 0; i < sol.length; i++) {
         var mychar = sol.charAt(i);
-        if (mychar != '.') {
+        if (mychar !== '.') {
             var num = sol.charCodeAt(i) - 65;
             letter_counts[num] += 1;
             total_letters += 1;

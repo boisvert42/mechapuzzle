@@ -24,7 +24,7 @@ function clues_of_length(clue_length, sort_by)
 	html += '</form>\n';
 	html += '<big><pre>\n';
 
-	var myobj = puzdata.all_entries.filter(x => x['Clue'].split(' ').length == clue_length);
+	var myobj = puzdata.all_entries.filter(x => x['Clue'].split(' ').length === clue_length);
 	if (clue_length >= 10) {
 		myobj = puzdata.all_entries.filter(x => x['Clue'].split(' ').length >= 10);
 	}
@@ -146,11 +146,11 @@ function clue_list() {
         `<div class="clue-item"><span><strong>${entry.Number}.</strong> ${entry.Clue} </span><span><em>${entry.Entry}</em></span></div>`;
 
     html += "<h3>ACROSS</h3>";
-    for (var entry of acrossEntries) {
+    for (let entry of acrossEntries) {
         html += displayTemplate(entry);
     }
     html += "<br /><h3>DOWN</h3>";
-    for (var entry of downEntries) {
+    for (let entry of downEntries) {
         html += displayTemplate(entry);
     }
     document.getElementById("clues1").innerHTML = html;

@@ -42,11 +42,11 @@ function sort_string(a, b) {
 }
 
 function sort_entries(arr, by) {
-	if (by == 'Number') {
+	if (by === 'Number') {
 		arr.sort((a, b) => {return a['Number'] - b['Number'];});
-	} else if (by == 'Clue') {
+	} else if (by === 'Clue') {
 		arr.sort((a, b) => {return sort_string(a['Clue'], b['Clue']);});
-	} else if (by == 'Entry') {
+	} else if (by === 'Entry') {
 		arr.sort((a, b) => {return sort_string(a['Entry'], b['Entry']);});
 	}
 }
