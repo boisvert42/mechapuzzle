@@ -135,9 +135,9 @@
                     window.puzdata = JSCrossword.fromData(new Uint8Array(contents), options);
                     // add "theme" to this
                     window.puzdata.theme = [new Set(), new Set()];
-                    // Because it may be a "solved" crossword, replace "solution" with "letter" if applicable
+                    // Because it may be a "solved" crossword, replace "solution" with "value" if applicable
                     window.puzdata.cells.forEach(function (cell) {
-                        cell.solution = cell.letter || cell.solution;
+                        cell.solution = cell.value || cell.solution;
                     });
                     // add the useful "all_entries" with Number / Direction / Clue / Entry
                     var all_entries = [];
