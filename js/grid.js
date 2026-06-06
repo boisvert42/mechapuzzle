@@ -6,69 +6,6 @@ var standard_letter_distribution = [11.3, 1.9, 2.9, 3.6, 13.0, 1.1, 2.0, 2.4, 6.
 var highlighted_letters = {'A':0, 'B':0, 'C':0, 'D':0, 'E':0, 'F':0, 'G':0, 'H':0, 'I':0, 'J':0, 'K':0, 'L':0, 'M':0, 'N':0, 'O':0, 'P':0, 'Q':0, 'R':0, 'S':0, 'T':0, 'U':0, 'V':0, 'W':0, 'X':0, 'Y':0, 'Z':0};
 var ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
-function highlight_cell(x, y) {
-    var puzdata = window.puzdata;
-    if (!puzdata) return;
-    if (!puzdata.selected_cells) {
-        puzdata.selected_cells = new Set();
-    }
-    var key = x + ',' + y;
-    if (puzdata.selected_cells.has(key)) {
-        puzdata.selected_cells.delete(key);
-    } else {
-        puzdata.selected_cells.add(key);
-    }
-    display_grid();
-    // also re-render theme grid if we are on theme tab
-    if (document.getElementById('theme_js')) {
-        display_grid('theme_js');
-    }
-}
-
-function show_grid_context_menu(e, x, y, across_num, down_num, render_to) {
-    e.preventDefault();
-    var menu = document.getElementById('grid-context-menu');
-    var acrossItem = document.getElementById('highlight-across');
-    var downItem = document.getElementById('highlight-down');
-
-    if (across_num && across_num !== 'null' && across_num !== '') {
-        acrossItem.style.display = 'block';
-        acrossItem.innerText = 'Highlight ' + across_num + ' Across';
-        acrossItem.onclick = function() {
-            toggle_theme(across_num, 'across', render_to);
-            menu.style.display = 'none';
-        };
-    } else {
-        acrossItem.style.display = 'none';
-    }
-
-    if (down_num && down_num !== 'null' && down_num !== '') {
-        downItem.style.display = 'block';
-        downItem.innerText = 'Highlight ' + down_num + ' Down';
-        downItem.onclick = function() {
-            toggle_theme(down_num, 'down', render_to);
-            menu.style.display = 'none';
-        };
-    } else {
-        downItem.style.display = 'none';
-    }
-
-    if (acrossItem.style.display === 'none' && downItem.style.display === 'none') return;
-
-    menu.style.display = 'block';
-    menu.style.left = e.pageX + 'px';
-    menu.style.top = e.pageY + 'px';
-
-    // Hide menu on click elsewhere
-    var hideMenu = function() {
-        menu.style.display = 'none';
-        document.removeEventListener('click', hideMenu);
-    };
-    setTimeout(function() {
-        document.addEventListener('click', hideMenu);
-    }, 10);
-}
-
 function render_grid() {
     document.getElementById(grid_render_to).innerHTML = '';
     width_height();
@@ -118,7 +55,6 @@ function symmetry() {
 
 /* toggle theme status of an entry */
 function toggle_theme(grid_num, dir, render_to) {
-    if (!grid_num || grid_num === 'null') return;
     var puzdata = window.puzdata;
     var dir_index = (dir === 'across') ? 0 : 1;
     var dir_theme_entries = puzdata.theme[dir_index];
@@ -128,11 +64,8 @@ function toggle_theme(grid_num, dir, render_to) {
     else {
         dir_theme_entries.add(grid_num);
     }
-    // Re-display both grids to ensure highlighting carries over
-    display_grid(grid_render_to);
-    if (document.getElementById('theme_js')) {
-        display_grid('theme_js');
-    }
+    // Re-display the grid
+    display_grid(render_to);
     return true;
 }
 
@@ -158,7 +91,7 @@ function display_grid() // display_grid(render_to = NULL)
     var downEntries = thisGrid.downEntries();
     Object.keys(acrossEntries).forEach(function(num) {
         var wd = acrossEntries[num];
-        var clue = puzdata.all_entries.find((entry) => (String(entry.Number) === String(num) && entry.Direction.toLowerCase() === 'across'));
+        var clue = puzdata.all_entries.find((entry) => (entry.Number === Number(num) && entry.Direction.toLowerCase() === 'across'));
         if (clue) {
             wd.cells.forEach(function(cell_coords) {
               acrossWordClues[cell_coords] = clue;
@@ -169,7 +102,7 @@ function display_grid() // display_grid(render_to = NULL)
     //console.log(downEntries);
     Object.keys(downEntries).forEach(function(num) {
         var wd = downEntries[num];
-        var clue = puzdata.all_entries.find((entry) => (String(entry.Number) === String(num) && entry.Direction.toLowerCase() === 'down'));
+        var clue = puzdata.all_entries.find((entry) => (entry.Number === Number(num) && entry.Direction.toLowerCase() === 'down'));
         if (clue) {
             wd.cells.forEach(function(cell_coords) {
               downWordClues[cell_coords] = clue;
@@ -190,8 +123,8 @@ function display_grid() // display_grid(render_to = NULL)
             var cell_key = x + ',' + y;
             var awc = acrossWordClues[cell_key] || {};
             var dwc = downWordClues[cell_key] || {};
-            var across_number = awc.Number ? String(awc.Number) : '';
-            var down_number = dwc.Number ? String(dwc.Number) : '';
+            var across_number = awc.Number || '';
+            var down_number = dwc.Number || '';
 
             /** For the tooltip **/
             var tooltip_text = (across_number ? across_number + 'A: ' + awc.Clue : '');
@@ -199,20 +132,13 @@ function display_grid() // display_grid(render_to = NULL)
             tooltip_text += (down_number ? down_number + 'D: ' + dwc.Clue : '');
 
             /** For coloring **/
-            var class_list = [];
-            if (thisGrid.isBlack(x, y)) {
-                class_list.push('black');
-            }
             if (puzdata.theme[0].has(across_number) || puzdata.theme[1].has(down_number)) {
-                class_list.push('theme');
+                td_class = ' class="theme"';
             }
+
             if (highlighted_letters[sol_at_index]) {
-                class_list.push('highlighted');
+                td_class = ' class="highlighted"';
             }
-            if (puzdata.selected_cells && puzdata.selected_cells.has(cell_key)) {
-                class_list.push('selected');
-            }
-            var td_class = (class_list.length > 0 ? ' class="' + class_list.join(' ') + '"' : '');
 
             /**
              * All cells have the class of "puzcell"
@@ -223,8 +149,8 @@ function display_grid() // display_grid(render_to = NULL)
                 div_class_array.push('circle');
             }
             var div_class = ' class="' + div_class_array.join(' ') + '"';
-            grid_html += '<td' + td_class + ' onclick="highlight_cell(' + x + ',' + y + ');return false;" ';
-            grid_html += 'oncontextmenu="show_grid_context_menu(event,' + x + ',' + y + ',\'' + across_number + '\',\'' + down_number + '\',\'' + render_to + '\');return false;">\n';
+            grid_html += '<td' + td_class + ' onclick="toggle_theme(' + across_number + ',\'across\',\'' + render_to + '\');return false;" ';
+            grid_html += 'oncontextmenu="toggle_theme(' + down_number + ',\'down\',\'' + render_to + '\');return false;">\n';
             grid_html += '  <div' + div_class + '>\n';
             grid_html += '    <div class="number">' + thisNumber + '</div>\n';
             grid_html += '    <div class="letter">' + sol_at_index + '</div>\n';
@@ -238,8 +164,7 @@ function display_grid() // display_grid(render_to = NULL)
     }
     grid_html += '</table>';
     //console.log(grid_html);
-    document.getElementById(render_to).innerHTML += grid_html;
-    document.getElementById(render_to).innerHTML += '<div class="grid-instructions">Left-click to toggle cell highlights. Right-click for word highlighting.</div><br />\n';
+    document.getElementById(render_to).innerHTML += grid_html + '<br />\n';
 }
 
 function letter_frequency() {
