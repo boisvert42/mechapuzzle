@@ -11,7 +11,7 @@ function init() {
     for (var i = 0; i < tabListItems.length; i++) {
         if (tabListItems[i].nodeName == "LI") {
             var tabLink = getFirstChildWithTagName(tabListItems[i], 'A');
-            var id = getHash(tabLink.getAttribute('href'));
+            let id = getHash(tabLink.getAttribute('href'));
             tabLinks[id] = tabLink;
             contentDivs[id] = document.getElementById(id);
         }

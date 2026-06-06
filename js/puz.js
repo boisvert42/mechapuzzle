@@ -300,7 +300,7 @@ var ActiveXObject, parsedPuz, filecontents, PUZAPP = {};
                 sdw = retval.startDownWord(x, y);
                 saw = retval.startAcrossWord(x, y);
                 isBlack = retval.isBlack(x, y);
-                var this_index = retval.toIndex(x, y);
+                let this_index = retval.toIndex(x, y);
                 if (saw) {
                     // Start of an across entry
                     // Grab the number
@@ -338,7 +338,7 @@ var ActiveXObject, parsedPuz, filecontents, PUZAPP = {};
             for (y = 0; y < h; y++) {
                 sdw = retval.startDownWord(x, y);
                 isBlack = retval.isBlack(x, y);
-                var this_index = retval.toIndex(x, y);
+                let this_index = retval.toIndex(x, y);
                 if (sdw) {
                     down_clue_number = downWordNbrs[this_index];
                     // Start the entry
