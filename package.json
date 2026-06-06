@@ -1,0 +1,5 @@
+{
+  "scripts": {
+    "test": "node --test test/theme.test.mjs test/helper_functions.test.mjs test/tabs.test.mjs"
+  }
+}
