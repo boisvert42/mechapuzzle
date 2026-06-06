@@ -25,6 +25,20 @@ h2 {
     margin-top: 0;
 }
 
+.status-indicator {
+    font-size: 0.85rem;
+    color: #666;
+    margin-top: -18px;
+    margin-bottom: 15px;
+}
+
+.info-icon {
+    cursor: help;
+    margin-left: 4px;
+    color: var(--accent-color);
+    font-style: normal;
+}
+
 /* Layout Components */
 .container {
     max-width: 1000px;

@@ -49,6 +49,7 @@
 
 <div class="tabContent" id="grid">
     <h2>Grid</h2>
+    <div id="grid-status" class="status-indicator"></div>
     <div id="grid_js"></div>
     <div id="grid0" class="chart-container-large"></div>
     <div id="grid1"></div>
@@ -136,9 +137,18 @@
                     // add "theme" to this
                     window.puzdata.theme = [new Set(), new Set()];
                     // Because it may be a "solved" crossword, replace "solution" with "value" if applicable
+                    let hasFill = false;
                     window.puzdata.cells.forEach(function (cell) {
+                        if (cell.value) hasFill = true;
                         cell.solution = cell.value || cell.solution;
                     });
+                    const statusEl = document.getElementById('grid-status');
+                    const tooltipText = "Solution: The intended answers for the puzzle. Fill: User-entered letters (e.g., in a partially solved file). If both are present, fill is prioritized.";
+                    if (hasFill) {
+                        statusEl.innerHTML = 'Fill <span class="info-icon" title="' + tooltipText + '">&#9432;</span>';
+                    } else {
+                        statusEl.innerHTML = 'Solution <span class="info-icon" title="' + tooltipText + '">&#9432;</span>';
+                    }
                     // add the useful "all_entries" with Number / Direction / Clue / Entry
                     var all_entries = [];
                     const wordid_to_word = window.puzdata.get_entry_mapping();
