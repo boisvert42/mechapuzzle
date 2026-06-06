@@ -24,7 +24,7 @@ function clues_of_length(clue_length, sort_by)
 	html += '</form>\n';
 	html += '<big><pre>\n';
 
-	var myobj = puzdata.all_entries.filter(x => x['Clue'].split(' ').length == clue_length);
+	var myobj = puzdata.all_entries.filter(x => x['Clue'].split(' ').length === clue_length);
 	if (clue_length >= 10) {
 		myobj = puzdata.all_entries.filter(x => x['Clue'].split(' ').length >= 10);
 	}
