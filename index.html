@@ -116,53 +116,47 @@
         const files = evt.target.files; // FileList object
 
         // files is a FileList of File objects.
-        for (let i = 0, f; f = files[i]; i++) {
+        for (const f of files) {
 
             // Only process small files.
             if (f.size >= 75000) {
                 alert('This file is too big.');
                 continue;
             }
-            if (f) {
-                const r = new FileReader();
-                r.onload = (function (theFile) {
-                    return function (e) {
-                        let contents = e.target.result;
-                        //var elt = document.getElementById('puzjs_output');
-                        //const puzdata = PUZAPP.parsepuz(contents);
-                        let options = {};
-                        const urlParams = new URLSearchParams(window.location.search);
-                        if (urlParams.get('unlock') === 'true') {
-                            options.lockedHandling = "bruteforce";
-                        }
-                        window.puzdata = JSCrossword.fromData(new Uint8Array(contents), options);
-                        // add "theme" to this
-                        window.puzdata.theme = [new Set(), new Set()];
-                        // Because it may be a "solved" crossword, replace "solution" with "letter" if applicable
-                        window.puzdata.cells.forEach(function (cell) {
-                          cell.solution = cell.letter || cell.solution;
+            const r = new FileReader();
+            r.onload = (function (theFile) {
+                return function (e) {
+                    let contents = e.target.result;
+                    let options = {};
+                    const urlParams = new URLSearchParams(window.location.search);
+                    if (urlParams.get('unlock') === 'true') {
+                        options.lockedHandling = "bruteforce";
+                    }
+                    window.puzdata = JSCrossword.fromData(new Uint8Array(contents), options);
+                    // add "theme" to this
+                    window.puzdata.theme = [new Set(), new Set()];
+                    // Because it may be a "solved" crossword, replace "solution" with "letter" if applicable
+                    window.puzdata.cells.forEach(function (cell) {
+                        cell.solution = cell.letter || cell.solution;
+                    });
+                    // add the useful "all_entries" with Number / Direction / Clue / Entry
+                    var all_entries = [];
+                    const wordid_to_word = window.puzdata.get_entry_mapping();
+                    window.puzdata.clues.forEach(function(clue_list) {
+                        var direction = clue_list.title;
+                        clue_list.clue.forEach(function(my_clue) {
+                            var num = my_clue['number'];
+                            var clue = my_clue['text'];
+                            var entry = wordid_to_word[my_clue['word']];
+                            all_entries.push({'Number': num, 'Direction': direction, 'Clue': clue, 'Entry': entry});
                         });
-                        // add the useful "all_entries" with Number / Direction / Clue / Entry
-                        var all_entries = [];
-                        const wordid_to_word = window.puzdata.get_entry_mapping();
-                        window.puzdata.clues.forEach(function(clue_list) {
-                            var direction = clue_list.title;
-                            clue_list.clue.forEach(function(my_clue) {
-                                var num = my_clue['number'];
-                                var clue = my_clue['text'];
-                                var entry = wordid_to_word[my_clue['word']];
-                                all_entries.push({'Number': num, 'Direction': direction, 'Clue': clue, 'Entry': entry});
-                            });
-                        });
-                        window.puzdata.all_entries = all_entries;
-                        console.log(window.puzdata);
-                        render_all();
-                    };
-                })(f);
-                r.readAsArrayBuffer(f);
-            } else {
-                alert("Failed to load file");
-            }
+                    });
+                    window.puzdata.all_entries = all_entries;
+                    console.log(window.puzdata);
+                    render_all();
+                };
+            })(f);
+            r.readAsArrayBuffer(f);
         }
     }
     document.getElementById('files').addEventListener('change', handleFileSelect, false);
