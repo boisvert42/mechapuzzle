@@ -143,7 +143,7 @@
                         cell.solution = cell.value || cell.solution;
                     });
                     const statusEl = document.getElementById('grid-status');
-                    const tooltipText = "Solution: The intended answers for the puzzle. Fill: User-entered letters (e.g., in a partially solved file). If both are present, fill is prioritized.";
+                    const tooltipText = "• &quot;Solution&quot;: intended answers for the puzzle&#10;• &quot;Fill&quot;: user-entered letters&#10;ℹ If both are present, fill is prioritized.";
                     if (hasFill) {
                         statusEl.innerHTML = 'Fill <span class="info-icon" title="' + tooltipText + '">&#9432;</span>';
                     } else {
