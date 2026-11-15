@@ -73,12 +73,11 @@ test('addKeyValuePairToMultimap', async (t) => {
 
 test('getCluesPreOrPostfixedWith', async (t) => {
     const clues = [
-        { number: 1, text: '*Leading star' },
-        { number: 2, text: 'Trailing star*' },
-        { number: 3, text: 'No star here' },
+        { number: 1, text: '*Leading star', word: 10 },
+        { number: 2, text: 'Trailing star*', word: 20 },
+        { number: 3, text: 'No star here', word: 30 },
     ];
-    // entries is 1-based: index = clue array position + 1
-    const entries = { 1: 'ENTRY1', 2: 'ENTRY2', 3: 'ENTRY3' };
+    const entries = { 10: 'ENTRY1', 20: 'ENTRY2', 30: 'ENTRY3' };
 
     await t.test('returns prefixed and postfixed clues with their entries', () => {
         const result = getCluesPreOrPostfixedWith(clues, '*', entries, 'A');
@@ -92,7 +91,7 @@ test('getCluesPreOrPostfixedWith', async (t) => {
         );
     });
     await t.test('no matching clues returns empty result', () => {
-        const noMatch = [{ number: 1, text: 'No star here' }];
+        const noMatch = [{ number: 1, text: 'No star here', word: 10 }];
         assertVmDeepEqual(
             getCluesPreOrPostfixedWith(noMatch, '*', entries, 'D'),
             { clues: [], entries: [] }
