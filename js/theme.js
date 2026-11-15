@@ -91,8 +91,8 @@ function display_starred_clues(puzdata) {
     retval.className = 'items indent';
     retval.id = 'starred';
 
-    var across_clues = puzdata.clues[0].clue;
-    var down_clues = puzdata.clues[1].clue;
+    var across_clues = extract_clues(puzdata, 'ACROSS') || [];
+    var down_clues = extract_clues(puzdata, 'DOWN') || [];
     var entry_map = puzdata.get_entry_mapping();
     let starred_across = getCluesPreOrPostfixedWith(across_clues, '*', entry_map, 'A');
     let starred_down = getCluesPreOrPostfixedWith(down_clues, '*', entry_map, 'D');
@@ -144,7 +144,7 @@ function getCluesPreOrPostfixedWith(clues, token, entries, type) {
     for (let i in clues) {
       var clue_num = clues[i].number;
       var clue_text = clues[i].text;
-      var clue_entry = entries[Number(i)+1]; /* dictionary is 1-based */
+      var clue_entry = entries[clues[i].word];
       if (clue_text.startsWith(token) || clue_text.endsWith(token)) {
         retClues.push(clue_num + type + ' [' + clue_text + ']');
         retEntries.push(clue_entry);
